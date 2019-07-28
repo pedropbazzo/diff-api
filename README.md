@@ -1,5 +1,13 @@
 # diff-api
 
+[![Build Status](https://travis-ci.org/mariazevedo88/diff-api.svg?branch=master)](https://travis-ci.org/mariazevedo88/diff-api) [![Coverage Status](https://coveralls.io/repos/github/mariazevedo88/diff-api/badge.svg?branch=master)](https://coveralls.io/github/mariazevedo88/diff-api?branch=master)
+
+### About
+
+Diff API that accepts and compare JSON base64 strings.
+
+### API endpoints and documentation
+
 This API provides HTTP endpoints that accepts JSON base64 encoded binary data on both, as it follows:
 
 * <b>List all messages created:</b> `<host>/`
@@ -24,6 +32,7 @@ This API provides HTTP endpoints that accepts JSON base64 encoded binary data on
 
 * <b>The provided data is diff-ed and the results are available on a third end point:</b> `<host>/v1/diff/<ID>`
 
+The API documentation could be found here: [https://diffapi.docs.apiary.io/#](https://diffapi.docs.apiary.io/#)
 
 <b>The results are provided in JSON format as following:</b>
 
@@ -46,7 +55,9 @@ This project was developed with:
 
 The API also was developed to run with an jar. In order to generate this jar, you should run:
 
-    mvn package
+```
+mvn package
+```
 
 It will clean, compile and generate a jar at target directory, e.g. `diff-api-1.0.0.jar`
 
@@ -56,26 +67,34 @@ To run the API Unit and Unit and Integration Tests, follow the instructions belo
 
 * For both test phases, you can run:
 
-    mvn test
+```
+mvn test
+```
 
 * To run only Unit Tests:
 
-    mvn -Dtest=DiffApiApplicationUnitTests test
+```
+mvn -Dtest=DiffApiApplicationUnitTests test
+```
 
 * To run only Integration Tests:
 
-    mvn -Dtest=DiffApiApplicationIntegrationTests test
+```
+mvn -Dtest=DiffApiApplicationIntegrationTests test
+```
     
 ### Run
 
 In order to run the API, run the jar simply as following:
 
-    java -jar diff-api-1.0.0.jar --spring.profiles.active=prod
+```
+java -jar diff-api-1.0.0.jar --spring.profiles.active=prod
+```
     
 or
 
-	 mvn spring-boot:run -Dspring.profiles.active=prod
+```
+mvn spring-boot:run -Dspring.profiles.active=prod
+```
 
-By default, the API will be available at 
-
-    http://localhost:8080/
+By default, the API will be available at [http://localhost:8080/](http://localhost:8080/)
