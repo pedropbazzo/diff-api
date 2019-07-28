@@ -16,8 +16,6 @@ public class MessageDiff implements Serializable{
 	private int offset;
 	private int length;
 	
-	public MessageDiff() {}
-	
 	public MessageDiff(int offset, int length) {
 		this.offset = offset;
 		this.length = length;
@@ -37,15 +35,6 @@ public class MessageDiff implements Serializable{
 
 	public void setLength(int length) {
 		this.length = length;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + length;
-		result = prime * result + offset;
-		return result;
 	}
 
 	@Override

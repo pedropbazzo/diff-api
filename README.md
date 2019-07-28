@@ -1,4 +1,5 @@
 # diff-api
+
 This API provides HTTP endpoints that accepts JSON base64 encoded binary data on both, as it follows:
 
 * <b>List all messages created:</b> `<host>/`
@@ -6,6 +7,12 @@ This API provides HTTP endpoints that accepts JSON base64 encoded binary data on
 * <b>List all left messages created:</b> `<host>/v1/diff/left/all`
 	 
 * <b>List all right messages created:</b> `<host>/v1/diff/right/all`
+
+* <b>Clean all messages created:</b> `<host>/v1/diff/cleanAllMessages`
+
+* <b>Encode some string in a JSON base64 string on the left endpoint:</b> `<host>/v1/diff/{id}/left/encodeString`
+	 
+* <b>Encode some string some JSON base64 string on the right endpoint:</b> `<host>/v1/diff/{id}/right/encodeString`
 	 
 * <b>Decode some JSON base64 string on the left endpoint:</b> `<host>/v1/diff/{id}/left/decodeString`
 	 
@@ -29,9 +36,9 @@ This API provides HTTP endpoints that accepts JSON base64 encoded binary data on
 
 This project was developed with:
 
-    Java Development Kit (JDK) 1.8.0_221
-    JUnit 5
-    Apache Maven
+    Java Development Kit (JDK) 1.8.0_212
+    JUnit 5.3.2
+    Apache Maven 3.6.1
     Eclipse 2019-06
     Spring Boot 2.1.4  
     
@@ -41,32 +48,34 @@ The API also was developed to run with an jar. In order to generate this jar, yo
 
     mvn package
 
-It will clean, compile and generate a jar at target directory, e.g. `diff-api-1.0.0-jar-with-dependencies.jar`
+It will clean, compile and generate a jar at target directory, e.g. `diff-api-1.0.0.jar`
 
 ### Test
 
-It provides some methods to test:
+To run the API Unit and Unit and Integration Tests, follow the instructions below:
 
-• Unit and Integration Tests
-
-For both, you can run:
+* For both test phases, you can run:
 
     mvn test
 
-Just for Unit Tests:
+* To run only Unit Tests:
 
     mvn -Dtest=DiffApiApplicationUnitTests test
 
-Just for Integration Tests, run:
+* To run only Integration Tests:
 
     mvn -Dtest=DiffApiApplicationIntegrationTests test
     
 ### Run
 
-In order to run the web service, run the uber jar simply as following:
+In order to run the API, run the jar simply as following:
 
-    java -jar diff-api-1.0.0-jar-with-dependencies.jar
+    java -jar diff-api-1.0.0.jar --spring.profiles.active=prod
+    
+or
 
-By default, the service will be available at 
+	 mvn spring-boot:run -Dspring.profiles.active=prod
+
+By default, the API will be available at 
 
     http://localhost:8080/

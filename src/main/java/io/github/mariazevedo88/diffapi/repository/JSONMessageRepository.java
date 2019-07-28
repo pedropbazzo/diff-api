@@ -20,10 +20,17 @@ public class JSONMessageRepository implements IRepository {
 	
 	private static IRepository instance;
 	
-	private Map<Long, JSONMessage> leftMessage = new HashMap<>();
-    private Map<Long, JSONMessage> rightMessage = new HashMap<>();
+	private Map<Long, JSONMessage> leftMessage;
+    private Map<Long, JSONMessage> rightMessage;
     
-    private List<JSONMessage> allMessages = new ArrayList<>();
+    private List<JSONMessage> allMessages;
+    
+    public JSONMessageRepository() {
+    	leftMessage = new HashMap<>();
+    	rightMessage = new HashMap<>();
+    	
+    	allMessages = new ArrayList<>();
+	}
     
     /**
      * Method that creates or return an instance of JSONMessageRepository
@@ -96,6 +103,15 @@ public class JSONMessageRepository implements IRepository {
 		allMessages.addAll(getAllLeftMessages());
 		allMessages.addAll(getAllRightMessages());
 		return allMessages;
+	}
+
+	@Override
+	public boolean cleanAllMessages() {
+		leftMessage.clear();
+		rightMessage.clear();
+		allMessages.clear();
+		
+		return (leftMessage.isEmpty() && rightMessage.isEmpty() && allMessages.isEmpty());
 	}
 
 }

@@ -26,6 +26,9 @@
 		<java.version>1.8</java.version>
 		<log4j.version>1.2.17</log4j.version>
 		<json.simple>1.1.1</json.simple>
+		<surefire.plugin.version>2.22.0</surefire.plugin.version>
+		<jacoco.version>0.7.9</jacoco.version>
+		<coveralls.version>4.3.0</coveralls.version>
 	</properties>
 
 	<dependencies>
@@ -73,45 +76,139 @@
         <dependency>
 		    <groupId>org.junit.jupiter</groupId>
 		    <artifactId>junit-jupiter-api</artifactId>
-		    <version>5.4.0</version><!--$NO-MVN-MAN-VER$-->
 		    <scope>test</scope>
 		</dependency>
 		<dependency>
 		    <groupId>org.junit.jupiter</groupId>
 		    <artifactId>junit-jupiter-engine</artifactId>
-		    <version>5.4.0</version><!--$NO-MVN-MAN-VER$-->
 		    <scope>test</scope>
 		</dependency>
 		<dependency>
 		    <groupId>org.junit.jupiter</groupId>
 		    <artifactId>junit-jupiter-params</artifactId>
-		    <version>5.4.0</version><!--$NO-MVN-MAN-VER$-->
 		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.junit.platform</groupId>
+		    <artifactId>junit-platform-commons</artifactId>
 		</dependency>
 	</dependencies>
 
 	<build>
+	    <resources>
+	        <resource>
+	            <directory>src/main/resources</directory>
+	            <filtering>true</filtering>
+	        </resource>
+	    </resources>
 		<plugins>
 			<plugin>
 		        <artifactId>maven-compiler-plugin</artifactId>
+		        <version>3.8.0</version><!--$NO-MVN-MAN-VER$-->
 		        <configuration>
 		           <source>${java.version}</source>
 		           <target>${java.version}</target>
 		        </configuration>
       		</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.plugin.version}</version><!--$NO-MVN-MAN-VER$-->
+            </plugin>
 			<plugin>
                  <groupId>org.springframework.boot</groupId>
                  <artifactId>spring-boot-maven-plugin</artifactId>
+                 <configuration>
+				    <fork>true</fork>
+				    <mainClass>io.github.mariazevedo88.diffapi.DiffApiApplication</mainClass>
+				  </configuration>
                  <executions>
                      <execution>
-                         <id>build-info</id>
                          <goals>
-                             <goal>build-info</goal>
+                             <goal>repackage</goal>
                          </goals>
                      </execution>
                  </executions>
              </plugin>
+             <plugin>
+			    <groupId>org.eluder.coveralls</groupId>
+			    <artifactId>coveralls-maven-plugin</artifactId>
+			    <version>${coveralls.version}</version>
+			    <configuration>
+			        <repoToken>${env.REPO_TOKEN}</repoToken>
+			    </configuration>
+			 </plugin>
+             <plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>post-unit-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+					        <rules>
+					        	<!-- implementation is needed only for Maven 2 -->
+					            <rule implementation="org.jacoco.maven.RuleConfiguration">
+					                <element>BUNDLE</element>
+					                <limits>
+					                	<!-- implementation is needed only for Maven 2 -->
+					                    <limit implementation="org.jacoco.report.check.Limit">
+					                        <counter>COMPLEXITY</counter>
+					                        <value>COVEREDRATIO</value>
+					                        <minimum>0.80</minimum>
+					                    </limit>
+					                </limits>
+					            </rule>
+					        </rules>
+							<dataFile>target/jacoco.exec</dataFile>
+							<!-- Sets the output directory for the code coverage report. -->
+							<outputDirectory>target/jacoco-ut</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<systemPropertyVariables>
+						<jacoco-agent.destfile>target/jacoco.exec</jacoco-agent.destfile>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+	
+	<profiles>
+		<profile>
+		    <id>dev</id>
+		    <properties>
+		        <activatedProperties>dev</activatedProperties>
+		    </properties>
+		    <activation>
+		        <activeByDefault>true</activeByDefault>
+		    </activation>
+		</profile>
+		<profile>
+		    <id>prod</id>
+		    <properties>
+		        <activatedProperties>prod</activatedProperties>
+		    </properties>
+		</profile>
+	</profiles>
 
 </project>

@@ -87,4 +87,12 @@ public interface IRepository{
 	 */
 	public List<JSONMessage> getAllMessages();
 
+	/**
+	 * Method that clean all {@code JSONMessage} created
+	 * 
+	 * @author Mariana Azevedo
+     * @since 28/07/2019
+     * 
+	 */
+	public boolean cleanAllMessages();
 }

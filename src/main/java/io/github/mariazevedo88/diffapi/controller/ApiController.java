@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -89,6 +90,20 @@ public class ApiController {
 	}
 	
 	/**
+	 * Method that cleans all messages at endpoints.
+	 * 
+	 * @author Mariana Azevedo
+	 * @since 28/07/2019
+	 * 
+	 * @return ResponseEntity - 200.
+	 */
+	@GetMapping(path = "/v1/diff/cleanAllMessages")
+	public ResponseEntity<Boolean> cleanAllMessages() {
+		repository = (JSONMessageRepository) JSONMessageRepository.getInstance();
+		return ResponseEntity.ok(repository.cleanAllMessages());
+	}
+	
+	/**
 	 * Method that fetches all left messages at the left endpoints.
 	 * 
 	 * @author Mariana Azevedo
@@ -134,12 +149,12 @@ public class ApiController {
 	 * 
 	 * @param id
 	 * @param message
-	 * @return ResponseEntity - 201, if is created with success or 422 if isn't.
+	 * @return ResponseEntity - 201, if is created with success or 500 if isn't.
 	 */
 	@PostMapping(path = "/v1/diff/{id}/left")
 	public ResponseEntity<JSONMessage> createLeftJSONMessage(@PathVariable("id") long id, @RequestBody JSONObject message){
-		JSONMessage finalMessage = createMessage(id, message.get("message").toString());
 		try {
+			JSONMessage finalMessage = createMessage(id, message.get("message").toString());
 			repository = (JSONMessageRepository) JSONMessageRepository.getInstance();
 			repository.createLeftJSONMessage(finalMessage);
 			
@@ -149,8 +164,8 @@ public class ApiController {
 			return ResponseEntity.created(location).body(finalMessage);
 			
 		} catch (Exception e) {
-			logger.error("Error on create the message: " + finalMessage.toString() + " " + e);
-			return ResponseEntity.unprocessableEntity().body(finalMessage);
+			logger.error("Message is not a valid string." + e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
 
@@ -162,12 +177,12 @@ public class ApiController {
 	 * 
 	 * @param id
 	 * @param message
-	 * @return ResponseEntity - 201, if is created with success or 422 if isn't.
+	 * @return ResponseEntity - 201, if is created with success or 500 if isn't.
 	 */
 	@PostMapping(path = "/v1/diff/{id}/right")
 	public ResponseEntity<JSONMessage> createRightJSONMessage(@PathVariable("id") long id, @RequestBody JSONObject message){
-		JSONMessage finalMessage = createMessage(id, message.get("message").toString());
 		try {
+			JSONMessage finalMessage = createMessage(id, message.get("message").toString());
 			repository = (JSONMessageRepository) JSONMessageRepository.getInstance();
 			repository.createRightJSONMessage(finalMessage);
 			
@@ -177,8 +192,8 @@ public class ApiController {
 			return ResponseEntity.created(location).body(finalMessage);
 			
 		} catch (Exception e) {
-			logger.error("Error on create the message: " + finalMessage.toString() + " " + e);
-			return ResponseEntity.unprocessableEntity().body(finalMessage);
+			logger.error("Message is not a valid string." + e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
 
@@ -189,16 +204,18 @@ public class ApiController {
 	 * @since 23/07/2019
 	 * 
 	 * @param id
-	 * @return ResponseEntity - 200, if the id exists or 404 if isn't.
+	 * @return ResponseEntity - 200, if the id exists or 500 if isn't.
 	 */
 	@GetMapping(path = "/v1/diff/{id}")
 	public ResponseEntity<ResultDiff> compare(@PathVariable("id") long id) {
-		ResultDiff result = compareService.compare(id);
-		
-		if(result == null) {
-			return ResponseEntity.notFound().build();
+		ResultDiff result = null;
+		try {
+			result = compareService.compare(id);
+			return ResponseEntity.ok(result);
+		}catch (NullPointerException e) {
+			logger.error(e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
 		}
-		return ResponseEntity.ok(result);
 	}
 	
 	/**
@@ -208,7 +225,7 @@ public class ApiController {
 	 * @since 23/07/2019
 	 * 
 	 * @param id
-	 * @return ResponseEntity - 200, if is decoded with success or 422 if isn't.
+	 * @return ResponseEntity - 200, if is decoded with success or 500 if isn't.
 	 */
 	@GetMapping(path = "/v1/diff/{id}/left/decodeString")
 	public ResponseEntity<String> getDecodedBase64LeftMessage(@PathVariable("id") long id) {
@@ -225,7 +242,7 @@ public class ApiController {
 			
 		}catch (Exception e){
 			logger.error("Error on decode the message: " + message + " " + e);
-			return ResponseEntity.unprocessableEntity().body(null);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
 		}
 	}
 	
@@ -236,7 +253,7 @@ public class ApiController {
 	 * @since 23/07/2019
 	 * 
 	 * @param id
-	 * @return ResponseEntity - 200, if is decoded with success or 422 if isn't.
+	 * @return ResponseEntity - 200, if is decoded with success or 500 if isn't.
 	 */
 	@GetMapping(path = "/v1/diff/{id}/right/decodeString")
 	public ResponseEntity<String> getDecodedBase64RightMessage(@PathVariable("id") long id) {
@@ -253,7 +270,57 @@ public class ApiController {
 			
 		}catch (Exception e){
 			logger.error("Error on decode the message: " + message + " " + e);
-			return ResponseEntity.unprocessableEntity().body(null);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+		}
+	}
+	
+	/**
+	 * Method that decodes a string in base64 in the left endpoint.
+	 * 
+	 * @author Mariana Azevedo
+	 * @since 23/07/2019
+	 * 
+	 * @param id
+	 * @return ResponseEntity - 200, if is decoded with success or 500 if isn't.
+	 */
+	@PostMapping(path = "/v1/diff/{id}/left/encodeString")
+	public ResponseEntity<String> getEncodedBase64LeftMessage(@PathVariable("id") long id, @RequestBody JSONObject message) {
+		
+		try {
+			String leftMessage = message.get("message").toString();
+			if(!encodingService.isEncodedBase64(leftMessage)) {
+				leftMessage = encodingService.encodeToBase64(leftMessage.getBytes());
+			}
+			return ResponseEntity.ok(leftMessage);
+			
+		}catch (NullPointerException e){
+			logger.error("Error on encode the message: " + message + " " + e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+	}
+	
+	/**
+	 * Method that decodes a string in base64 in the left endpoint.
+	 * 
+	 * @author Mariana Azevedo
+	 * @since 23/07/2019
+	 * 
+	 * @param id
+	 * @return ResponseEntity - 200, if is decoded with success or 500 if isn't.
+	 */
+	@PostMapping(path = "/v1/diff/{id}/right/encodeString")
+	public ResponseEntity<String> getEncodedBase64RightMessage(@PathVariable("id") long id, @RequestBody JSONObject message) {
+		
+		try {
+			String rightMessage = message.get("message").toString();
+			if(!encodingService.isEncodedBase64(rightMessage)) {
+				rightMessage = encodingService.encodeToBase64(rightMessage.getBytes());
+			}
+			return ResponseEntity.ok(rightMessage);
+			
+		}catch (NullPointerException e){
+			logger.error("Error on encode the message: " + message + " " + e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
 }
