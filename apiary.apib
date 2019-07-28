@@ -1,80 +1,201 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: http://localhost:8080
 
 # diff-api
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+This API provides HTTP endpoints that accepts JSON base64 encoded binary data on both.
 
-## Questions Collection [/questions]
+## List all Messages [/]
 
-### List All Questions [GET]
+### List all messages created [GET]
 
 + Response 200 (application/json)
 
         [
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
+                "id": 1,
+                "value": "QmFuYW5hIFByYXRh"
+            },
+            {
+                "id": 1,
+                "value": "QWJhY2F4aQ=="
+            }
+        ]
+        
+## List all left messages [/v1/diff/left/all] 
+
+### List all left messages created [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id": 1,
+                "value": "QmFuYW5hIFByYXRh"
             }
         ]
 
-### Create a New Question [POST]
++ Response 404
+    
+        [
+        
+        ]
 
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+## List all right messages [/v1/diff/right/all] 
+
+### List all right messages created [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id": 1,
+                "value": "QWJhY2F4aQ=="
+            }
+        ]
+
++ Response 404
+    
+        [
+        
+        ]
+
+        
+## Clean all messages [/v1/diff/cleanAllMessages]
+
+### Clean all messages created [GET]
+
++ Response 200 (application/json)
+
+        [
+        ]
+        
+## Encode a string in the left endpoint [/v1/diff/1/left/encodeString]
+
+### Encode string in the left endpoint [POST]
 
 + Request (application/json)
 
         {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
+            "message": "Hello World"
         }
 
-+ Response 201 (application/json)
++ Response 200 (text/plain)
 
-    + Headers
+    + Body
 
-            Location: /questions/2
+            SGVsbG8gV29ybGQ=
+            
++ Response 500
+
+## Encode a string in the right endpoint [/v1/diff/1/right/encodeString]
+
+### Encode string in the right endpoint [POST]
+
++ Request (application/json)
+
+        {
+            "message": "Hello World!"
+        }
+
++ Response 200 (text/plain)
+
+    + Body
+
+            SGVsbG8gV29ybGQh
+            
++ Response 500
+
+## Decode a string in the left endpoint [/v1/diff/1/left/decodeString]
+
+### Decode string in the left endpoint [POST]
+
++ Request (application/json)
+
+        {
+            "message": "SGVsbG8gV29ybGQ="
+        }
+
++ Response 200 (text/plain)
+
+    + Body
+
+            Hello World
+            
++ Response 500
+
+## Decode a string in the right endpoint [/v1/diff/1/right/decodeString]
+
+### Decode string in the right endpoint [POST]
+
++ Request (application/json)
+
+        {
+            "message": "SGVsbG8gV29ybGQh"
+        }
+
++ Response 200 (text/plain)
+
+    + Body
+
+            Hello World!
+            
++ Response 500
+
+## Create a message on the left endpoint [/v1/diff/1/left]
+
+### Create a message on the left endpoint [POST]
+
++ Request (application/json)
+
+        {
+            "message": "QXBwbGU="
+        }
+
++ Response 200 (text/plain)
 
     + Body
 
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
+                "id": 1,
+                "value": "QXBwbGU="
             }
+            
++ Response 500
+
+## Create a message on the right endpoint [/v1/diff/1/right]
+
+### Create a message on the right endpoint [POST]
+
++ Request (application/json)
+
+        {
+            "message": "QWJhY2F4aQ=="
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "id": 1,
+                "value": "QWJhY2F4aQ=="
+            }
+            
++ Response 500
+
+## Diff-ed endpoint [/v1/diff/1]
+
+### Diff-ed messages between endpoints [GET]
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "id": 1,
+                "result": "DIFFERENT_SIZE",
+                "diffs": null
+            }
+            
++ Response 500
