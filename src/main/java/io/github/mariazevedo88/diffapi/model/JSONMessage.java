@@ -1,5 +1,12 @@
 package io.github.mariazevedo88.diffapi.model;
 
+/**
+ * Class that implements a JSONMessage structure with an id and an value.
+ * 
+ * @author Mariana Azevedo
+ * @since 23/07/2019
+ * 
+ */
 public class JSONMessage {
 	
 	private Long id;
@@ -21,4 +28,10 @@ public class JSONMessage {
 	public void setValue(String value) {
 		this.value = value;
 	}
+
+	@Override
+	public String toString() {
+		return "JSONMessage [id=" + id + ", value=" + value + "]";
+	}
+	
 }

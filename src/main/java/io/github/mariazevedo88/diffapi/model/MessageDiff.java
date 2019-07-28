@@ -2,6 +2,13 @@ package io.github.mariazevedo88.diffapi.model;
 
 import java.io.Serializable;
 
+/**
+ * Class that implements a MessageDiff structure with an offset and a length.
+ * 
+ * @author Mariana Azevedo
+ * @since 25/07/2019
+ * 
+ */
 public class MessageDiff implements Serializable{
 
 	private static final long serialVersionUID = 190102684474375198L;

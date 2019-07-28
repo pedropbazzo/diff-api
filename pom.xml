@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>io.github.mariazevedo88</groupId>
 	<artifactId>diff-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>diff-api</name>
 	<description>Diff API that accepts and compare JSON base64</description>
 	

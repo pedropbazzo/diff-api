@@ -14,11 +14,27 @@ import io.github.mariazevedo88.diffapi.model.MessageDiff;
 import io.github.mariazevedo88.diffapi.model.ResultDiff;
 import io.github.mariazevedo88.diffapi.repository.JSONMessageRepository;
 
+/**
+ * Service that implements methods related to base64 string comparison functionality.
+ * 
+ * @author Mariana Azevedo
+ * @since 23/07/2019
+ */
 @Service
 public class ComparatorService {
 	
 	private static final Logger logger = Logger.getLogger(ComparatorService.class);
 	
+	/**
+	 * Method that compares two data sequences according to an informed id. The comparison only happens if both 
+	 * messages/inputs (left and right) are found for the same id.
+	 * 
+	 * @author Mariana Azevedo
+	 * @since 25/07/2019
+	 * @param id
+	 * @return <p>Null if both or at least one input (left or right) are null.
+     * <p>ResultDiff with all comparison data.
+	 */
 	public ResultDiff compare(long id) {
 		
         JSONMessage leftMessage = JSONMessageRepository.getInstance().getLeftJSONMessage(id);
@@ -44,27 +60,41 @@ public class ComparatorService {
         return result;
 	}
 	
-	public List<MessageDiff> checkDiffBetweenWords(JSONMessage inputLeft, JSONMessage inputRight) {
+	/**
+	 * Method that compares two sequences of JSON base64 data and computes the offsets and 
+     * lengths of the differences.
+     * 
+     * @author Mariana Azevedo
+	 * @since 25/07/2019
+	 * 
+     * @param leftMessage data came from left endpoint.
+     * @param rightMessage data came from right endpoint.
+     * @return a list of {@code MessageDiff} with offsets and lengths of the differences.
+	 */
+	public List<MessageDiff> checkDiffBetweenWords(JSONMessage leftMessage, JSONMessage rightMessage) {
         
 		List<MessageDiff> diffList = new LinkedList<>();
 		AtomicInteger length = new AtomicInteger(0);
 		AtomicInteger offset = new AtomicInteger(-1);
-		AtomicInteger i = new AtomicInteger(0);
+		AtomicInteger count = new AtomicInteger(0);
 
-        List<Character> collect = inputLeft.getValue().chars().mapToObj(c -> (char) c).collect(Collectors.toList());
-        collect.stream().forEach(c -> {
-        	if (i.intValue() < inputLeft.getValue().length() && c != inputRight.getValue().charAt(i.intValue())) {
+        List<Character> leftMessageCharList = leftMessage.getValue().chars().mapToObj(c -> (char) c).collect(Collectors.toList());
+        leftMessageCharList.stream().forEach(c -> {
+        	if (count.intValue() < leftMessage.getValue().length() && c != rightMessage.getValue().charAt(count.intValue())) {
                 length.addAndGet(1);
                 if (offset.intValue() < 0) {
-                	offset.set(i.intValue());
+                	offset.set(count.intValue());
                 }
             }
-        	i.addAndGet(1);
+        	count.addAndGet(1);
         });
         
         if (offset.intValue() != -1) {
             diffList.add(new MessageDiff(offset.intValue(), length.intValue()));
         }
+        
+        logger.info("Diffs: " + diffList);
+        
         return diffList;
     }
 
