@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -24,14 +23,14 @@ import io.github.mariazevedo88.diffapi.service.DecodingService;
 import io.github.mariazevedo88.diffapi.service.EncodingService;
 
 /**
- * SpringBoot RestController that creates all service endpoints starting at '/v1/diff' for the API to function properly.
+ * SpringBoot RestController that creates all service endpoints 
+ * starting at '/v1/diff' for the API to function properly.
  * 
  * @author Mariana Azevedo
  * @since 23/07/2019
  *
  */
 @RestController
-@RequestMapping(path = "/")
 public class ApiController {
 	
 	private static final Logger logger = Logger.getLogger(ApiController.class);
@@ -78,7 +77,7 @@ public class ApiController {
 	 * 
 	 * @return ResponseEntity - 200, if has messages or 404 if hasn't.
 	 */
-	@GetMapping(path = "/")
+	@GetMapping(path = "/v1/diff")
 	public ResponseEntity<List<JSONMessage>> findAll() {
 		repository = (JSONMessageRepository) JSONMessageRepository.getInstance();
 

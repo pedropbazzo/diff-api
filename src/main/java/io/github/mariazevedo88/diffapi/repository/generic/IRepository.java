@@ -2,8 +2,6 @@ package io.github.mariazevedo88.diffapi.repository.generic;
 
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
-
 import io.github.mariazevedo88.diffapi.model.JSONMessage;
 
 /**
@@ -12,7 +10,6 @@ import io.github.mariazevedo88.diffapi.model.JSONMessage;
  * @author Mariana Azevedo
  * @since 23/07/2019
  */
-@Repository
 public interface IRepository{
 	
 	/**
