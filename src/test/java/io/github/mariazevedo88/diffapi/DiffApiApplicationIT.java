@@ -34,9 +34,9 @@ import io.github.mariazevedo88.diffapi.enumeration.ResultDiffEnum;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@DisplayName("DiffApiApplicationIntegrationTests")
+@DisplayName("DiffApiApplicationIT")
 @TestInstance(Lifecycle.PER_CLASS)
-public class DiffApiApplicationIntegrationTests {
+public class DiffApiApplicationIT {
 
 	@Autowired
     private MockMvc mockMvc;
@@ -189,7 +189,7 @@ public class DiffApiApplicationIntegrationTests {
 		this.mockMvc.perform(post("/v1/diff/66/right").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
         		.content(new ObjectMapper().writeValueAsString(mapRight))).andExpect(status().isCreated());
 		
-        this.mockMvc.perform(get("/")).andExpect(status().isOk());
+        this.mockMvc.perform(get("/v1/diff")).andExpect(status().isOk());
     }
 	
 	@Test

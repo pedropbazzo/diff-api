@@ -44,9 +44,9 @@ import io.github.mariazevedo88.diffapi.service.EncodingService;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@DisplayName("DiffApiApplicationUnitTests")
+@DisplayName("DiffApiApplicationUnitTest")
 @TestInstance(Lifecycle.PER_CLASS)
-public class DiffApiApplicationUnitTests {
+public class DiffApiApplicationUnitTest {
 	
 	@Autowired
     private ApiController controller;
