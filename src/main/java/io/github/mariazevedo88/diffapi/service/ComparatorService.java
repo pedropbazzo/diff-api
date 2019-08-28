@@ -40,21 +40,17 @@ public class ComparatorService {
         JSONMessage leftMessage = JSONMessageRepository.getInstance().getLeftJSONMessage(id);
         JSONMessage rightMessage = JSONMessageRepository.getInstance().getRightJSONMessage(id);
         
-        ResultDiff result = null;
-
         logger.info(this.getClass() + ": [id = " + id + ", left = " + leftMessage.getValue() +
         		", right = " + rightMessage.getValue() + "]");
         
-        if (leftMessage != null && rightMessage != null) {
-        	result = new ResultDiff(id);
-            if (leftMessage.getValue().equals(rightMessage.getValue())) {
-                result.setResult(ResultDiffEnum.EQUAL);
-            } else if (leftMessage.getValue().length() != rightMessage.getValue().length()) {
-            	 result.setResult(ResultDiffEnum.DIFFERENT_SIZE);
-            } else {
-            	result.setResult(ResultDiffEnum.DIFFERENT);
-            	result.setDiffs(checkDiffBetweenWords(leftMessage, rightMessage));
-            }
+        ResultDiff result = new ResultDiff(id);
+        if (leftMessage.getValue().equals(rightMessage.getValue())) {
+            result.setResult(ResultDiffEnum.EQUAL);
+        } else if (leftMessage.getValue().length() != rightMessage.getValue().length()) {
+        	 result.setResult(ResultDiffEnum.DIFFERENT_SIZE);
+        } else {
+        	result.setResult(ResultDiffEnum.DIFFERENT);
+        	result.setDiffs(checkDiffBetweenWords(leftMessage, rightMessage));
         }
         
         return result;
@@ -79,7 +75,7 @@ public class ComparatorService {
 		AtomicInteger count = new AtomicInteger(0);
 
         List<Character> leftMessageCharList = leftMessage.getValue().chars().mapToObj(c -> (char) c).collect(Collectors.toList());
-        leftMessageCharList.stream().forEach(c -> {
+        leftMessageCharList.forEach(c -> {
         	if (count.intValue() < leftMessage.getValue().length() && c != rightMessage.getValue().charAt(count.intValue())) {
                 length.addAndGet(1);
                 if (offset.intValue() < 0) {

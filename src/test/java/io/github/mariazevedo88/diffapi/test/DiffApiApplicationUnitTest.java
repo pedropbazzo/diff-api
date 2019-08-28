@@ -1,4 +1,4 @@
-package io.github.mariazevedo88.diffapi;
+package io.github.mariazevedo88.diffapi.test;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
