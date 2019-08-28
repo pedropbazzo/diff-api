@@ -1,6 +1,6 @@
 # diff-api
 
-[![Build Status](https://travis-ci.org/mariazevedo88/diff-api.svg?branch=master)](https://travis-ci.org/mariazevedo88/diff-api) [![Coverage Status](https://coveralls.io/repos/github/mariazevedo88/diff-api/badge.svg?branch=master)](https://coveralls.io/github/mariazevedo88/diff-api?branch=master)
+[![Build Status](https://travis-ci.org/mariazevedo88/diff-api.svg?branch=master)](https://travis-ci.org/mariazevedo88/diff-api) [![Coverage Status](https://coveralls.io/repos/github/mariazevedo88/diff-api/badge.svg?branch=master)](https://coveralls.io/github/mariazevedo88/diff-api?branch=master) [![Known Vulnerabilities](https://snyk.io//test/github/mariazevedo88/diff-api/badge.svg?targetFile=pom.xml)](https://snyk.io//test/github/mariazevedo88/diff-api?targetFile=pom.xml)
 
 ### About
 
@@ -49,7 +49,7 @@ This project was developed with:
     JUnit 5.3.2
     Apache Maven 3.6.1
     Eclipse 2019-06
-    Spring Boot 2.1.4  
+    Spring Boot 2.1.7  
     
 ### Compile and Package
 
@@ -59,28 +59,22 @@ The API also was developed to run with an jar. In order to generate this jar, yo
 mvn package
 ```
 
-It will clean, compile and generate a jar at target directory, e.g. `diff-api-1.0.0.jar`
+It will clean, compile and generate a jar at target directory, e.g. `diff-api-1.1.0.jar`
 
 ### Test
 
 To run the API Unit and Unit and Integration Tests, follow the instructions below:
 
-* For both test phases, you can run:
+* To run only Unit Tests:
 
 ```
 mvn test
 ```
 
-* To run only Unit Tests:
+* To run all tests (including Integration Tests):
 
 ```
-mvn -Dtest=DiffApiApplicationUnitTests test
-```
-
-* To run only Integration Tests:
-
-```
-mvn -Dtest=DiffApiApplicationIntegrationTests test
+mvn integration-test
 ```
     
 ### Run
@@ -88,7 +82,7 @@ mvn -Dtest=DiffApiApplicationIntegrationTests test
 In order to run the API, run the jar simply as following:
 
 ```
-java -jar diff-api-1.0.0.jar --spring.profiles.active=prod
+java -jar diff-api-1.1.0.jar --spring.profiles.active=prod
 ```
     
 or

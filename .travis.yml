@@ -5,9 +5,9 @@ jdk:
   - oraclejdk8
 
 git:
-  depth: 3 #clone repository to a maximum depth of 3 commits
+  depth: 2 #clone repository to a maximum depth of 2 commits
 
 script: "mvn clean install -Dmaven.javadoc.skip=true -B -V"
 
 after_success:
-  - mvn clean install test jacoco:report coveralls:report #generate Jacoco reports
+  - mvn clean integration-test jacoco:report coveralls:report #generate Jacoco reports
