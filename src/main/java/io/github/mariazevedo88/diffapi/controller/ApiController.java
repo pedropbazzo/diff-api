@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import io.github.mariazevedo88.diffapi.factory.JSONMessageFactoryImpl;
 import io.github.mariazevedo88.diffapi.model.JSONMessage;
 import io.github.mariazevedo88.diffapi.model.ResultDiff;
-import io.github.mariazevedo88.diffapi.repository.JSONMessageRepository;
 import io.github.mariazevedo88.diffapi.service.ComparatorService;
 import io.github.mariazevedo88.diffapi.service.DecodingService;
 import io.github.mariazevedo88.diffapi.service.EncodingService;
@@ -34,9 +34,10 @@ import io.github.mariazevedo88.diffapi.service.EncodingService;
 public class ApiController {
 	
 	private static final Logger logger = Logger.getLogger(ApiController.class);
+	private static final String MESSAGE = "message";
 	
 	@Autowired
-    private ComparatorService compareService;
+    private ComparatorService comparatorService;
 	
 	@Autowired
 	private EncodingService encodingService; 
@@ -44,7 +45,7 @@ public class ApiController {
 	@Autowired
 	private DecodingService decodingService;
 	
-	private JSONMessageRepository repository;
+	private JSONMessageFactoryImpl jsonMessageFactory = new JSONMessageFactoryImpl();
 	
 	/**
 	 * Method that creates a JSONMessage, checking if the passed String is in base64.
@@ -57,16 +58,10 @@ public class ApiController {
 	 * @return JSONMessage
 	 */
 	private JSONMessage createMessage(Long id, String message) {
-		
-		JSONMessage jsonMessage = new JSONMessage();
 		if(!encodingService.isEncodedBase64(message)) {
 			message = encodingService.encodeToBase64(message.getBytes());
 		}
-		
-		jsonMessage.setValue(message);
-		jsonMessage.setId(id);
-		
-		return jsonMessage;
+		return jsonMessageFactory.createMessage(id, message);
 	}
 	
 	/**
@@ -79,13 +74,10 @@ public class ApiController {
 	 */
 	@GetMapping(path = "/v1/diff")
 	public ResponseEntity<List<JSONMessage>> findAll() {
-		repository = (JSONMessageRepository) JSONMessageRepository.getInstance();
-
-		if(repository.getAllMessages().isEmpty()) {
+		if(jsonMessageFactory.getAllMessages() == null || jsonMessageFactory.getAllMessages().isEmpty()) {
 			return ResponseEntity.notFound().build(); 
 		}
-		
-		return ResponseEntity.ok(repository.getAllMessages());
+		return ResponseEntity.ok(jsonMessageFactory.getAllMessages());
 	}
 	
 	/**
@@ -98,8 +90,7 @@ public class ApiController {
 	 */
 	@GetMapping(path = "/v1/diff/cleanAllMessages")
 	public ResponseEntity<Boolean> cleanAllMessages() {
-		repository = (JSONMessageRepository) JSONMessageRepository.getInstance();
-		return ResponseEntity.ok(repository.cleanAllMessages());
+		return ResponseEntity.ok(jsonMessageFactory.cleanAllMessages());
 	}
 	
 	/**
@@ -112,13 +103,10 @@ public class ApiController {
 	 */
 	@GetMapping(path = "/v1/diff/left/all")
 	public ResponseEntity<List<JSONMessage>> findAllLeftMessages() {
-		repository = (JSONMessageRepository) JSONMessageRepository.getInstance();
-		
-		if(repository.getAllLeftMessages().isEmpty()) {
+		if(jsonMessageFactory.getAllLeftMessages().isEmpty()) {
 			return ResponseEntity.notFound().build(); 
 		}
-		
-		return ResponseEntity.ok(repository.getAllLeftMessages());
+		return ResponseEntity.ok(jsonMessageFactory.getAllLeftMessages());
 	}
 	
 	/**
@@ -131,13 +119,10 @@ public class ApiController {
 	 */
 	@GetMapping(path = "/v1/diff/right/all")
 	public ResponseEntity<List<JSONMessage>> findAllRightMessages() {
-		repository = (JSONMessageRepository) JSONMessageRepository.getInstance();
-		
-		if(repository.getAllRightMessages().isEmpty()) {
+		if(jsonMessageFactory.getAllRightMessages().isEmpty()) {
 			return ResponseEntity.notFound().build(); 
 		}
-		
-		return ResponseEntity.ok(repository.getAllRightMessages());
+		return ResponseEntity.ok(jsonMessageFactory.getAllRightMessages());
 	}
 	
 	/**
@@ -153,13 +138,13 @@ public class ApiController {
 	@PostMapping(path = "/v1/diff/{id}/left")
 	public ResponseEntity<JSONMessage> createLeftJSONMessage(@PathVariable("id") long id, @RequestBody JSONObject message){
 		try {
-			JSONMessage finalMessage = createMessage(id, message.get("message").toString());
-			repository = (JSONMessageRepository) JSONMessageRepository.getInstance();
-			repository.createLeftJSONMessage(finalMessage);
+			if(jsonMessageFactory.getLeftMessage() == null) jsonMessageFactory.createLeftEndpoint();
+			JSONMessage finalMessage = createMessage(id, message.get(MESSAGE).toString());
+			jsonMessageFactory.saveJSONMessageInLeftEndpoint(finalMessage);
 			
 			logger.info(finalMessage.toString());
 			
-			URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/v1/diff/{id}/left").buildAndExpand(id).toUri();
+			URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("").buildAndExpand(id).toUri();
 			return ResponseEntity.created(location).body(finalMessage);
 			
 		} catch (Exception e) {
@@ -181,13 +166,13 @@ public class ApiController {
 	@PostMapping(path = "/v1/diff/{id}/right")
 	public ResponseEntity<JSONMessage> createRightJSONMessage(@PathVariable("id") long id, @RequestBody JSONObject message){
 		try {
-			JSONMessage finalMessage = createMessage(id, message.get("message").toString());
-			repository = (JSONMessageRepository) JSONMessageRepository.getInstance();
-			repository.createRightJSONMessage(finalMessage);
+			if(jsonMessageFactory.getRightMessage() == null) jsonMessageFactory.createRightEndpoint();
+			JSONMessage finalMessage = createMessage(id, message.get(MESSAGE).toString());
+			jsonMessageFactory.saveJSONMessageInRightEndpoint(finalMessage);
 			
 			logger.info(finalMessage.toString());
 
-			URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/v1/diff/{id}/right").buildAndExpand(id).toUri();
+			URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("").buildAndExpand(id).toUri();
 			return ResponseEntity.created(location).body(finalMessage);
 			
 		} catch (Exception e) {
@@ -209,7 +194,8 @@ public class ApiController {
 	public ResponseEntity<ResultDiff> compare(@PathVariable("id") long id) {
 		ResultDiff result = null;
 		try {
-			result = compareService.compare(id);
+			comparatorService.setJSONMessageFactory(getJsonMessageFactory());
+			result = comparatorService.compare(id);
 			return ResponseEntity.ok(result);
 		}catch (NullPointerException e) {
 			logger.error(e);
@@ -232,9 +218,7 @@ public class ApiController {
 		String message = null;
 		
 		try {
-			repository = (JSONMessageRepository) JSONMessageRepository.getInstance();
-
-			message = repository.getLeftJSONMessage(id).getValue();
+			message = jsonMessageFactory.getLeftJSONMessage(id).getValue();
 			String decodeBase64ToString = decodingService.decodeBase64ToString(message);
 			
 			return ResponseEntity.ok(decodeBase64ToString);
@@ -260,9 +244,7 @@ public class ApiController {
 		String message = null;
 		
 		try {
-			repository = (JSONMessageRepository) JSONMessageRepository.getInstance();
-			
-			message = repository.getRightJSONMessage(id).getValue();
+			message = jsonMessageFactory.getRightJSONMessage(id).getValue();
 			String decodeBase64ToString = decodingService.decodeBase64ToString(message);
 			
 			return ResponseEntity.ok(decodeBase64ToString);
@@ -286,7 +268,7 @@ public class ApiController {
 	public ResponseEntity<String> getEncodedBase64LeftMessage(@PathVariable("id") long id, @RequestBody JSONObject message) {
 		
 		try {
-			String leftMessage = message.get("message").toString();
+			String leftMessage = message.get(MESSAGE).toString();
 			if(!encodingService.isEncodedBase64(leftMessage)) {
 				leftMessage = encodingService.encodeToBase64(leftMessage.getBytes());
 			}
@@ -311,7 +293,7 @@ public class ApiController {
 	public ResponseEntity<String> getEncodedBase64RightMessage(@PathVariable("id") long id, @RequestBody JSONObject message) {
 		
 		try {
-			String rightMessage = message.get("message").toString();
+			String rightMessage = message.get(MESSAGE).toString();
 			if(!encodingService.isEncodedBase64(rightMessage)) {
 				rightMessage = encodingService.encodeToBase64(rightMessage.getBytes());
 			}
@@ -321,5 +303,9 @@ public class ApiController {
 			logger.error("Error on encode the message: " + message + " " + e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
+	}
+
+	public JSONMessageFactoryImpl getJsonMessageFactory() {
+		return jsonMessageFactory;
 	}
 }

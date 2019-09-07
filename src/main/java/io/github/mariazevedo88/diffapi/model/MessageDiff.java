@@ -2,13 +2,23 @@ package io.github.mariazevedo88.diffapi.model;
 
 import java.io.Serializable;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * Class that implements a MessageDiff structure with an offset and a length.
  * 
  * @author Mariana Azevedo
  * @since 25/07/2019
- * 
  */
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 public class MessageDiff implements Serializable{
 
 	private static final long serialVersionUID = 190102684474375198L;
@@ -16,43 +26,6 @@ public class MessageDiff implements Serializable{
 	private int offset;
 	private int length;
 	
-	public MessageDiff(int offset, int length) {
-		this.offset = offset;
-		this.length = length;
-	}
-
-	public int getOffset() {
-		return offset;
-	}
-
-	public void setOffset(int offset) {
-		this.offset = offset;
-	}
-
-	public int getLength() {
-		return length;
-	}
-
-	public void setLength(int length) {
-		this.length = length;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		MessageDiff other = (MessageDiff) obj;
-		if (length != other.length)
-			return false;
-		if (offset != other.offset)
-			return false;
-		return true;
-	}
-
 	@Override
 	public String toString() {
 		return "MessageDiff [offset=" + offset + ", length=" + length + "]";

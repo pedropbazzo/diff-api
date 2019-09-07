@@ -51,6 +51,13 @@ public class DiffApiApplicationIT {
     }
 	
 	@Test
+	@DisplayName("Returns not found messages' list")
+    public void shouldReturnNotFoundMessages() throws Exception {
+		this.mockMvc.perform(get("/v1/diff/cleanAllMessages")).andExpect(status().isOk());
+        this.mockMvc.perform(get("/v1/diff")).andExpect(status().isNotFound());
+    }
+	
+	@Test
 	@DisplayName("Verify if JSON Base64 was created in the left endpoint")
 	public void shouldCreateJSONBase64InLeftEndpoint() throws Exception {
 		Map<String, String> map = new HashMap<>();
@@ -324,6 +331,18 @@ public class DiffApiApplicationIT {
 		
 		this.mockMvc.perform(post("/v1/diff/32/right/encodeString").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
         		.content(new ObjectMapper().writeValueAsString(mapRight))).andExpect(status().is5xxServerError());
+    }
+	
+	@Test
+	@DisplayName("Checks if API respond error on decode a JSON Base64 from a null String in left endpoint")
+    public void shouldReturnErrorOnDecodeStringInLeftEndpoint() throws Exception {
+		this.mockMvc.perform(get("/v1/diff/369/left/decodeString")).andExpect(status().is5xxServerError());
+    }
+	
+	@Test
+	@DisplayName("Checks if API respond error on decode a JSON Base64 from a null String in right endpoint")
+    public void shouldReturnErrorOnDecodeStringInRightEndpoint() throws Exception {
+		this.mockMvc.perform(get("/v1/diff/369/right/decodeString")).andExpect(status().is5xxServerError());
     }
 
 }

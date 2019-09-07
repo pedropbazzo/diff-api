@@ -9,10 +9,10 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import io.github.mariazevedo88.diffapi.enumeration.ResultDiffEnum;
+import io.github.mariazevedo88.diffapi.factory.generic.JSONMessageFactory;
 import io.github.mariazevedo88.diffapi.model.JSONMessage;
 import io.github.mariazevedo88.diffapi.model.MessageDiff;
 import io.github.mariazevedo88.diffapi.model.ResultDiff;
-import io.github.mariazevedo88.diffapi.repository.JSONMessageRepository;
 
 /**
  * Service that implements methods related to base64 string comparison functionality.
@@ -24,6 +24,12 @@ import io.github.mariazevedo88.diffapi.repository.JSONMessageRepository;
 public class ComparatorService {
 	
 	private static final Logger logger = Logger.getLogger(ComparatorService.class);
+	
+	private JSONMessageFactory factory;
+	
+	public void setJSONMessageFactory(JSONMessageFactory factory) {
+		this.factory = factory;
+	}
 	
 	/**
 	 * Method that compares two data sequences according to an informed id. The comparison only happens if both 
@@ -37,8 +43,8 @@ public class ComparatorService {
 	 */
 	public ResultDiff compare(long id) {
 		
-        JSONMessage leftMessage = JSONMessageRepository.getInstance().getLeftJSONMessage(id);
-        JSONMessage rightMessage = JSONMessageRepository.getInstance().getRightJSONMessage(id);
+        JSONMessage leftMessage = factory.getLeftJSONMessage(id);
+        JSONMessage rightMessage = factory.getRightJSONMessage(id);
         
         logger.info(this.getClass() + ": [id = " + id + ", left = " + leftMessage.getValue() +
         		", right = " + rightMessage.getValue() + "]");

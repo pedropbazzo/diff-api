@@ -12,9 +12,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 public class DiffApiApplication {
+	
+	private static boolean isExecuted;
 
 	public static void main(String[] args) {
 		SpringApplication.run(DiffApiApplication.class, args);
+		isExecuted = true;
 	}
 
+	public static boolean isExecuted() {
+		return isExecuted;
+	}
 }
