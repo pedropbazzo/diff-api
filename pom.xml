@@ -33,6 +33,7 @@
 		<jacoco.version>0.8.4</jacoco.version>
 		<coveralls.version>4.3.0</coveralls.version>
 		<jackson.version>2.10.0.pr3</jackson.version>
+		<maven-compiler.version>3.8.0</maven-compiler.version>
 	</properties>
 
 	<dependencies>
@@ -132,7 +133,7 @@
 		<plugins>
 			<plugin>
 		        <artifactId>maven-compiler-plugin</artifactId>
-		        <version>3.8.0</version><!--$NO-MVN-MAN-VER$-->
+		        <version>${maven-compiler.version}</version><!--$NO-MVN-MAN-VER$-->
 		        <configuration>
 		           <source>${java.version}</source>
 		           <target>${java.version}</target>
