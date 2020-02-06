@@ -32,7 +32,7 @@
 		<surefire.plugin.version>2.22.0</surefire.plugin.version>
 		<jacoco.version>0.8.4</jacoco.version>
 		<coveralls.version>4.3.0</coveralls.version>
-		<jackson.version>2.10.1</jackson.version>
+		<jackson.version>2.10.2</jackson.version>
 		<maven-compiler.version>3.8.0</maven-compiler.version>
 	</properties>
 
