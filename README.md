@@ -95,5 +95,5 @@ By default, the API will be available at [http://localhost:8080/](http://localho
 
 ### Documentation
 
-Apiary: https://diffapi.docs.apiary.io/#
-Swagger (development environment): http://localhost:8080/v2/api-docs
+* Apiary: https://diffapi.docs.apiary.io/#
+* Swagger (development environment): http://localhost:8080/v2/api-docs
