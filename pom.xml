@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.9.RELEASE</version>
+		<version>2.2.5.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	
@@ -26,99 +26,74 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<log4j.version>1.2.17</log4j.version>
-		<json.simple>1.1.1</json.simple>
-		<lombok.version>1.18.0</lombok.version>
 		<surefire.plugin.version>2.22.0</surefire.plugin.version>
 		<jacoco.version>0.8.4</jacoco.version>
 		<coveralls.version>4.3.0</coveralls.version>
-		<jackson.version>2.10.2</jackson.version>
-		<maven-compiler.version>3.8.0</maven-compiler.version>
+		<swagger.version>2.9.2</swagger.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<exclusions>
-	            <exclusion>
-	                <groupId>com.fasterxml.jackson.core</groupId>
-	                <artifactId>jackson-core</artifactId>
-	            </exclusion>
-        	</exclusions>
+			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 			<exclusions>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-            </exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-		
 		<dependency>
-    		<groupId>log4j</groupId>
-    		<artifactId>log4j</artifactId>
-    		<version>${log4j.version}</version>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		
 		<dependency>
-		    <groupId>com.googlecode.json-simple</groupId>
-		    <artifactId>json-simple</artifactId>
-		    <version>${json.simple}</version>
+		    <groupId>com.h2database</groupId>
+		    <artifactId>h2</artifactId>
+		    <scope>runtime</scope>
 		</dependency>
-		
 		<dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version><!--$NO-MVN-MAN-VER$-->
-            <scope>provided</scope>
-        </dependency>
-        
-        <dependency>
-		    <groupId>org.junit.jupiter</groupId>
-		    <artifactId>junit-jupiter-api</artifactId>
-		    <scope>test</scope>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
 		</dependency>
-
 		<dependency>
-		    <groupId>org.junit.jupiter</groupId>
-		    <artifactId>junit-jupiter-engine</artifactId>
-		    <scope>test</scope>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
 		<dependency>
-		    <groupId>org.junit.jupiter</groupId>
-		    <artifactId>junit-jupiter-params</artifactId>
-		    <scope>test</scope>
+		    <groupId>org.postgresql</groupId>
+		    <artifactId>postgresql</artifactId>
+		    <scope>runtime</scope>
 		</dependency>
-
 		<dependency>
-		    <groupId>org.junit.platform</groupId>
-		    <artifactId>junit-platform-commons</artifactId>
+		    <groupId>org.flywaydb</groupId>
+		    <artifactId>flyway-core</artifactId>
 		</dependency>
-
 		<dependency>
-		    <groupId>com.fasterxml.jackson.core</groupId>
-		    <artifactId>jackson-databind</artifactId>
-		    <version>${jackson.version}</version><!--$NO-MVN-MAN-VER$-->
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
-		
 		<dependency>
-		    <groupId>com.fasterxml.jackson.datatype</groupId>
-		    <artifactId>jackson-datatype-jsr310</artifactId>
-		    <version>${jackson.version}</version><!--$NO-MVN-MAN-VER$-->
+		    <groupId>io.springfox</groupId>
+		    <artifactId>springfox-swagger2</artifactId>
+		    <version>${swagger.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>io.springfox</groupId>
+		    <artifactId>springfox-swagger-ui</artifactId>
+		    <version>${swagger.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -132,14 +107,9 @@
 	    
 		<plugins>
 			<plugin>
-		        <artifactId>maven-compiler-plugin</artifactId>
-		        <version>${maven-compiler.version}</version><!--$NO-MVN-MAN-VER$-->
-		        <configuration>
-		           <source>${java.version}</source>
-		           <target>${java.version}</target>
-		        </configuration>
-      		</plugin>
-      		
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
@@ -272,23 +242,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	
-	<profiles>
-		<profile>
-		    <id>dev</id>
-		    <properties>
-		        <activatedProperties>dev</activatedProperties>
-		    </properties>
-		    <activation>
-		        <activeByDefault>true</activeByDefault>
-		    </activation>
-		</profile>
-		<profile>
-		    <id>prod</id>
-		    <properties>
-		        <activatedProperties>prod</activatedProperties>
-		    </properties>
-		</profile>
-	</profiles>
-
 </project>

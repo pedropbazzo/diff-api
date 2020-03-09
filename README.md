@@ -10,22 +10,8 @@ Diff API that accepts and compare JSON base64 strings.
 
 This API provides HTTP endpoints that accepts JSON base64 encoded binary data on both, as it follows:
 
-* <b>List all messages created:</b> `<host>/`
+* <b>List all messages created:</b> `<host>/v1/diff/all`
 	 
-* <b>List all left messages created:</b> `<host>/v1/diff/left/all`
-	 
-* <b>List all right messages created:</b> `<host>/v1/diff/right/all`
-
-* <b>Clean all messages created:</b> `<host>/v1/diff/cleanAllMessages`
-
-* <b>Encode some string in a JSON base64 string on the left endpoint:</b> `<host>/v1/diff/{id}/left/encodeString`
-	 
-* <b>Encode some string some JSON base64 string on the right endpoint:</b> `<host>/v1/diff/{id}/right/encodeString`
-	 
-* <b>Decode some JSON base64 string on the left endpoint:</b> `<host>/v1/diff/{id}/left/decodeString`
-	 
-* <b>Decode some JSON base64 string on the right endpoint:</b> `<host>/v1/diff/{id}/right/decodeString`
-
 * <b>Create a message on the left endpoint:</b> `<host>/v1/diff/<ID>/left`
         
 * <b>Create a message on the right endpoint:</b> `<host>/v1/diff/<ID>/right`
@@ -48,8 +34,10 @@ This project was developed with:
     Java Development Kit (JDK) 1.8.0_212
     JUnit 5.3.2
     Apache Maven 3.6.1
-    Eclipse 2019-06
-    Spring Boot 2.1.7  
+    Eclipse 2019-12
+    Spring Boot 2.2.5
+    PostgreSQL 9  
+    Flyway
     
 ### Compile and Package
 
@@ -60,6 +48,18 @@ mvn package
 ```
 
 It will clean, compile and generate a jar at target directory, e.g. `diff-api-1.1.0.jar`
+
+### Execution
+
+You need to have PostgreSQL 9 installed on your machine to run the API on `dev` profile. After installed, on the pgAdmin create a database named `diff`. If you don't have pdAdmin installed you can run on the psql console the follow command:
+
+```
+CREATE database diff;
+```
+
+When the application is running Flyway will create the necessary tables for the creation of the words and the execution of the compare between the endpoints.
+
+In the `test` profile, the application uses H2 databse (data in memory).
 
 ### Test
 
@@ -82,13 +82,18 @@ mvn integration-test
 In order to run the API, run the jar simply as following:
 
 ```
-java -jar diff-api-1.1.0.jar --spring.profiles.active=prod
+java -jar diff-api-1.1.0.jar --spring.profiles.active=dev
 ```
     
 or
 
 ```
-mvn spring-boot:run -Dspring.profiles.active=prod
+mvn spring-boot:run
 ```
 
 By default, the API will be available at [http://localhost:8080/](http://localhost:8080/)
+
+### Documentation
+
+Apiary: https://diffapi.docs.apiary.io/#
+Swagger (development environment): http://localhost:8080/v2/api-docs
