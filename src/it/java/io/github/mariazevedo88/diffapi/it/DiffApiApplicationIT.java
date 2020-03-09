@@ -4,11 +4,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,8 +21,6 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,7 +33,6 @@ import io.github.mariazevedo88.diffapi.enumeration.ResultDiffEnum;
  * 
  * @author Mariana Azevedo
  * @since 08/03/2020
- *
  */
 @SpringBootTest
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, MockitoTestExecutionListener.class })
@@ -42,29 +40,15 @@ import io.github.mariazevedo88.diffapi.enumeration.ResultDiffEnum;
 @ActiveProfiles("test")
 @DisplayName("DiffApiApplicationIT")
 @TestInstance(Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.Alphanumeric.class)
 public class DiffApiApplicationIT {
 
 	@Autowired
-	private WebApplicationContext webApplicationContext;
-	
-	@Autowired
     private MockMvc mockMvc;
-	
-	@BeforeAll
-	public void setUp() {
-		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-	        .build();
-	}
-	
-	@Test
-	@DisplayName("Returns all messages' list")
-    public void shouldReturnEmptyListMessagesCreated() throws Exception {
-        this.mockMvc.perform(get("/v1/diff/all")).andExpect(status().isOk());
-    }
 	
 	@Test
 	@DisplayName("Verify if JSON Base64 was created in the left endpoint")
-	public void shouldCreateJSONBase64InLeftEndpoint() throws Exception {
+	public void test0ShouldCreateJSONBase64InLeftEndpoint() throws Exception {
 		
 		this.mockMvc.perform(post("/v1/diff/1/left")
 				.content(getLeftJsonPayload("VGVzdGU="))
@@ -76,7 +60,7 @@ public class DiffApiApplicationIT {
 	
 	@Test
 	@DisplayName("Verify if JSON Base64 was created in the right endpoint")
-	public void shouldCreateJSONBase64InRightEndpoint() throws Exception {
+	public void test1ShouldCreateJSONBase64InRightEndpoint() throws Exception {
 		
 		this.mockMvc.perform(post("/v1/diff/1/right")
 				.content(getRightJsonPayload("VGVzdGU="))
@@ -87,8 +71,25 @@ public class DiffApiApplicationIT {
 	}
 	
 	@Test
+	@DisplayName("Checks if endpoint message comparison returns equal.")
+	public void test2ShouldTheComparisonResultBeEqual() throws Exception {
+		
+		this.mockMvc.perform(get("/v1/diff/1"))
+				.andExpect(status().isOk())
+				.andDo(MockMvcResultHandlers.print())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.data.result")
+						.value(ResultDiffEnum.EQUAL.getValue()));
+	}
+	
+	@Test
+	@DisplayName("Returns all messages' list")
+    public void test3ShouldReturnEmptyListMessagesCreated() throws Exception {
+        this.mockMvc.perform(get("/v1/diff/all")).andExpect(status().isOk());
+    }
+	
+	@Test
 	@DisplayName("Send invalid data to the left endpoint")
-	public void shouldSendInvalidDataToLeftEndpoint() throws Exception {
+	public void test4ShouldSendInvalidDataToLeftEndpoint() throws Exception {
 		
 		this.mockMvc.perform(post("/v1/diff/4/left")
 				.content(getRightJsonPayload("Test"))
@@ -100,7 +101,7 @@ public class DiffApiApplicationIT {
 	
 	@Test
 	@DisplayName("Send invalid data to the right endpoint")
-	public void shouldSendInvalidDataToRightEndpoint() throws Exception {
+	public void test5ShouldSendInvalidDataToRightEndpoint() throws Exception {
 		
 		this.mockMvc.perform(post("/v1/diff/4/right")
 				.content(getLeftJsonPayload("Test"))
@@ -111,69 +112,55 @@ public class DiffApiApplicationIT {
 	}
 	
 	@Test
-	@DisplayName("Checks if endpoint message comparison returns equal.")
-	public void shouldTheComparisonResultBeEqual() throws Exception {
+	@DisplayName("Verify if JSON Base64 was updated in the right endpoint")
+	public void test6ShouldUpdateJSONBase64InRightEndpoint() throws Exception {
 		
-		this.mockMvc.perform(post("/v1/diff/20/left")
-        		.content(getLeftJsonPayload("Test"))
-        		.contentType(MediaType.APPLICATION_JSON_VALUE)
-				.accept(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isCreated());
-		
-		this.mockMvc.perform(post("/v1/diff/20/right")
-        		.content(getRightJsonPayload("Test"))
-        		.contentType(MediaType.APPLICATION_JSON_VALUE)
-				.accept(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isCreated());
-		
-		this.mockMvc.perform(get("/v1/diff/20"))
+		this.mockMvc.perform(post("/v1/diff/1/right")
+				.content(getRightJsonPayload("Q2VsdWxhcg=="))
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.data.result").value(ResultDiffEnum.EQUAL.getValue()));
+				.andDo(MockMvcResultHandlers.print());
 	}
 	
 	@Test
 	@DisplayName("Checks if endpoint message comparison returns different by size.")
-	public void shouldTheComparisonResultBeDifferentSize() throws Exception {
+	public void test7ShouldTheComparisonResultBeDifferentSize() throws Exception {
 		
-		this.mockMvc.perform(post("/v1/diff/30/left")
-        		.content(getLeftJsonPayload("Anna"))
-        		.contentType(MediaType.APPLICATION_JSON_VALUE)
-				.accept(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isCreated());
-		
-		this.mockMvc.perform(post("/v1/diff/30/right")
-        		.content(getRightJsonPayload("Mariana"))
-        		.contentType(MediaType.APPLICATION_JSON_VALUE)
-				.accept(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isCreated());
-		
-		this.mockMvc.perform(get("/v1/diff/30"))
+		this.mockMvc.perform(get("/v1/diff/1"))
 				.andExpect(status().isOk())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.data.result").value(ResultDiffEnum.DIFFERENT_SIZE.getValue()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.data.result")
+						.value(ResultDiffEnum.DIFFERENT_SIZE.getValue()));
 	}
 	
+	@Test
+	@DisplayName("Verify if JSON Base64 was updated all endpoints")
+	public void test8ShouldUpdateJSONBase64Endpoints() throws Exception {
+		
+		this.mockMvc.perform(post("/v1/diff/1/left")
+				.content(getLeftJsonPayload("TWFuYW5h"))
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(MockMvcResultHandlers.print());
+		
+		this.mockMvc.perform(post("/v1/diff/1/right")
+				.content(getRightJsonPayload("QmFuYW5h"))
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(MockMvcResultHandlers.print());
+	}
 	
 	@Test
-	@DisplayName("Checks if endpoint message comparison returns completly different strings.")
-	public void shouldTheComparisonResultBeCompletlyDifferent() throws Exception {
+	@DisplayName("Checks if endpoint message comparison returns completely different strings.")
+	public void test9ShouldTheComparisonResultBeCompletelyDifferent() throws Exception {
 		
-        this.mockMvc.perform(post("/v1/diff/40/left")
-        		.content(getLeftJsonPayload("QXBwbGU="))
-        		.contentType(MediaType.APPLICATION_JSON_VALUE)
-				.accept(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isCreated());
-		
-		this.mockMvc.perform(post("/v1/diff/40/right")
-        		.content(getRightJsonPayload("SnVpY2U="))
-        		.contentType(MediaType.APPLICATION_JSON_VALUE)
-				.accept(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isCreated());
-		
-		this.mockMvc.perform(get("/v1/diff/40"))
+		this.mockMvc.perform(get("/v1/diff/1"))
 				.andExpect(status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.data.result").value(ResultDiffEnum.DIFFERENT.getValue()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.data.diff.offset").value(0))
-	        	.andExpect(MockMvcResultMatchers.jsonPath("$.data.diff.length").value(6));
+	        	.andExpect(MockMvcResultMatchers.jsonPath("$.data.diff.length").value(3));
 	}
 	
 	public String getLeftJsonPayload(String leftData) throws JsonProcessingException {

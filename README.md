@@ -97,3 +97,7 @@ By default, the API will be available at [http://localhost:8080/](http://localho
 
 * Apiary: https://diffapi.docs.apiary.io/#
 * Swagger (development environment): http://localhost:8080/v2/api-docs
+
+### Contributors
+
+[![](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/images/0)](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/links/0)[![](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/images/1)](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/links/1)[![](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/images/2)](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/links/2)[![](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/images/3)](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/links/3)[![](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/images/4)](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/links/4)[![](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/images/5)](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/links/5)[![](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/images/6)](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/links/6)[![](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/images/7)](https://sourcerer.io/fame/mariazevedo88/mariazevedo88/diff-api/links/7)
