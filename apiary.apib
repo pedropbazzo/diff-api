@@ -11,136 +11,46 @@ This API provides HTTP endpoints that accepts JSON base64 encoded binary data on
 
 + Response 200 (application/json)
 
-        [
+    {
+        "data": [
             {
                 "id": 1,
-                "value": "QmFuYW5hIFByYXRh"
+                "leftData": "TWFyaWFuYQ==",
+                "rightData": "TWFyaWFuYQ=="
             },
             {
-                "id": 1,
-                "value": "QWJhY2F4aQ=="
-            }
-        ]
-        
-## List all left messages [/v1/diff/left/all] 
-
-### List all left messages created [GET]
-
-+ Response 200 (application/json)
-
-        [
+                "id": 3,
+                "leftData": "QmFuYW5h",
+                "rightData": "TWHDp8Oj"
+            },
             {
-                "id": 1,
-                "value": "QmFuYW5hIFByYXRh"
-            }
-        ]
-
-+ Response 404
-    
-        [
-        
-        ]
-
-## List all right messages [/v1/diff/right/all] 
-
-### List all right messages created [GET]
-
-+ Response 200 (application/json)
-
-        [
+                "id": 2,
+                "leftData": "Q2VsdWxhcg==",
+                "rightData": "VGFibGV0cw=="
+            },
             {
-                "id": 1,
-                "value": "QWJhY2F4aQ=="
+                "id": 4,
+                "leftData": "QmFuYW5h",
+                "rightData": "TWFuYW5h"
+            },
+            {
+                "id": 5,
+                "leftData": "UGVyYQ==",
+                "rightData": "TGFyYW5qYQ=="
+            },
+            {
+                "id": 6,
+                "leftData": "THVjYXM=",
+                "rightData": null
+            },
+            {
+                "id": 7,
+                "leftData": "RGFuaQ==",
+                "rightData": "RGFuaQ=="
             }
-        ]
-
-+ Response 404
-    
-        [
-        
-        ]
-
-        
-## Clean all messages [/v1/diff/cleanAllMessages]
-
-### Clean all messages created [GET]
-
-+ Response 200 (application/json)
-
-        [
-        ]
-        
-## Encode a string in the left endpoint [/v1/diff/1/left/encodeString]
-
-### Encode string in the left endpoint [POST]
-
-+ Request (application/json)
-
-        {
-            "message": "Hello World"
-        }
-
-+ Response 200 (text/plain)
-
-    + Body
-
-            SGVsbG8gV29ybGQ=
-            
-+ Response 500
-
-## Encode a string in the right endpoint [/v1/diff/1/right/encodeString]
-
-### Encode string in the right endpoint [POST]
-
-+ Request (application/json)
-
-        {
-            "message": "Hello World!"
-        }
-
-+ Response 200 (text/plain)
-
-    + Body
-
-            SGVsbG8gV29ybGQh
-            
-+ Response 500
-
-## Decode a string in the left endpoint [/v1/diff/1/left/decodeString]
-
-### Decode string in the left endpoint [POST]
-
-+ Request (application/json)
-
-        {
-            "message": "SGVsbG8gV29ybGQ="
-        }
-
-+ Response 200 (text/plain)
-
-    + Body
-
-            Hello World
-            
-+ Response 500
-
-## Decode a string in the right endpoint [/v1/diff/1/right/decodeString]
-
-### Decode string in the right endpoint [POST]
-
-+ Request (application/json)
-
-        {
-            "message": "SGVsbG8gV29ybGQh"
-        }
-
-+ Response 200 (text/plain)
-
-    + Body
-
-            Hello World!
-            
-+ Response 500
+        ],
+        "errors": []
+    }
 
 ## Create a message on the left endpoint [/v1/diff/1/left]
 
@@ -149,17 +59,23 @@ This API provides HTTP endpoints that accepts JSON base64 encoded binary data on
 + Request (application/json)
 
         {
-            "message": "QXBwbGU="
+            "leftData": "Test"
         }
 
 + Response 200 (text/plain)
 
     + Body
 
-            {
-                "id": 1,
-                "value": "QXBwbGU="
-            }
+        {
+            "data": [
+                {
+                    "id": 1,
+                    "leftData": "TWFyaWFuYQ==",
+                    "rightData": null
+                }
+            ],
+            "errors": []
+        }
             
 + Response 500
 
@@ -170,17 +86,23 @@ This API provides HTTP endpoints that accepts JSON base64 encoded binary data on
 + Request (application/json)
 
         {
-            "message": "QWJhY2F4aQ=="
+            "rightData": "Test"
         }
 
 + Response 200 (application/json)
 
     + Body
 
+    {
+        "data": [
             {
-                "id": 1,
-                "value": "QWJhY2F4aQ=="
+                "id": 2,
+                "leftData": null,
+                "rightData": "TWFyaWFuYQ=="
             }
+        ],
+        "errors": []
+    }
             
 + Response 500
 
@@ -192,10 +114,18 @@ This API provides HTTP endpoints that accepts JSON base64 encoded binary data on
 
     + Body
 
-            {
+    {
+        "data": {
+            "id": 1,
+            "result": "EQUAL",
+            "message": {
                 "id": 1,
-                "result": "DIFFERENT_SIZE",
-                "diffs": null
-            }
+                "leftData": "TWFyaWFuYQ==",
+                "rightData": "TWFyaWFuYQ=="
+            },
+            "diff": null
+        },
+        "errors": []
+    }
             
 + Response 500
