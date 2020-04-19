@@ -17,7 +17,7 @@ import io.github.mariazevedo88.diffapi.service.MessageService;
  * Service that implements methods related to base64 string comparison functionality.
  * 
  * @author Mariana Azevedo
- * @since 23/07/2019
+ * @since 08/03/2020
  */
 @Service
 public class MessageServiceImpl implements MessageService {

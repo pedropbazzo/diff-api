@@ -53,7 +53,7 @@ public class ResultDiffServiceImpl implements ResultDiffService {
 	}
 
 	@Override
-	public ResultDiff compare(Message message) {
+	public ResultDiff compare (Message message) {
 		
         String leftData = message.getLeftData();
         String rightData = message.getRightData();

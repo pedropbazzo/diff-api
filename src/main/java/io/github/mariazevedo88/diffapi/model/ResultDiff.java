@@ -22,10 +22,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Class that implements a ResultDiff structure with an id, a diff result and the list of the diffs found.
+ * Class that implements a ResultDiff structure with an id, 
+ * a diff result and the list of the diffs found
  * 
  * @author Mariana Azevedo
- * @since 25/07/2019
+ * @since 08/03/2020
  */
 @AllArgsConstructor
 @NoArgsConstructor

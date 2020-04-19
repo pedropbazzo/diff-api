@@ -4,8 +4,7 @@ package io.github.mariazevedo88.diffapi.enumeration;
  * Enum that classifies the types of comparison's results that ComparatorService provides.
  * 
  * @author Mariana Azevedo
- * @since 25/07/2019
- *
+ * @since 08/03/2020
  */
 public enum ResultDiffEnum {
 	

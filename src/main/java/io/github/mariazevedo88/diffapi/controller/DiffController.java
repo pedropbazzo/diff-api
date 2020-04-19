@@ -8,6 +8,8 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -32,11 +34,11 @@ import io.github.mariazevedo88.diffapi.service.ResultDiffService;
 import io.github.mariazevedo88.diffapi.util.MessageUtil;
 
 /**
- * SpringBoot RestController that creates all service endpoints starting at '/v1/diff' for the API to function properly.
+ * SpringBoot RestController that creates all service endpoints starting at '/v1/diff' for 
+ * the API to function properly.
  * 
  * @author Mariana Azevedo
  * @since 08/03/2020
- *
  */
 @RestController
 @RequestMapping("/v1/diff/")
@@ -61,13 +63,17 @@ public class DiffController {
 	 * 
 	 * @return ResponseEntity - 200
 	 */
-	@GetMapping(path = "/all")
+	@GetMapping(path = "/all", produces = { "application/hal+json" })
 	public ResponseEntity<Response<List<MessageDTO>>> findAll() throws MessageNotFoundException {
 		
 		Response<List<MessageDTO>> response = new Response<>();
 
 		List<Message> message = messageService.findAll();
 		response.setData(messageService.convertListEntityToListDTO(message));
+		
+		Link link = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(DiffController.class)
+	            .findAll()).withSelfRel();
+		response.setLink(link);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
@@ -86,7 +92,7 @@ public class DiffController {
 	 *         ResponseEntity
 	 * @throws Exception 
 	 */
-	@PostMapping(path = "/{id}/left")
+	@PostMapping(path = "/{id}/left", produces = { "application/hal+json" })
 	public ResponseEntity<Response<MessageDTO>> saveLeftMessage(@Valid @PathVariable("id") long id, 
 			@Valid @RequestBody MessageDTO dto, BindingResult result) throws Exception{
 
@@ -143,7 +149,7 @@ public class DiffController {
 	 * @return ResponseEntity - 201, if is created with success or 500 if isn't.
 	 * @throws Exception 
 	 */
-	@PostMapping(path = "/{id}/right")
+	@PostMapping(path = "/{id}/right", produces = { "application/hal+json" })
 	public ResponseEntity<Response<MessageDTO>> saveRightMessage(@Valid @PathVariable("id") long id, 
 			@Valid @RequestBody MessageDTO dto, BindingResult result) throws Exception{
 
@@ -198,7 +204,7 @@ public class DiffController {
 	 * @param id
 	 * @return ResponseEntity - 200, if the id exists or 500 if isn't.
 	 */
-	@GetMapping(path = "/{id}")
+	@GetMapping(path = "/{id}", produces = { "application/hal+json" })
 	public ResponseEntity<Response<ResultDiffDTO>> compare(@Valid @PathVariable("id") long id) {
 
 		Response<ResultDiffDTO> response = new Response<>();

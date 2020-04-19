@@ -17,7 +17,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Class that implements a MessageDiff structure with an offset and a length.
+ * Class that implements a MessageDiff structure with an offset and a length
  * 
  * @author Mariana Azevedo
  * @since 25/07/2019

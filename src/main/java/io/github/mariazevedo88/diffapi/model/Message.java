@@ -14,7 +14,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Class that implements a message structure with an value.
+ * Class that implements a message structure with an value
  * 
  * @author Mariana Azevedo
  * @since 23/07/2019

@@ -31,7 +31,7 @@ The API documentation could be found here: [https://diffapi.docs.apiary.io/#](ht
 
 This project was developed with:
 
-    Java Development Kit (JDK) 1.8.0_212
+    Java Development Kit (JDK) 1.8.0_241
     JUnit 5.3.2
     Apache Maven 3.6.1
     Eclipse 2019-12
