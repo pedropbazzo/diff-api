@@ -30,7 +30,7 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "message_diff")
-public class MessageDiff implements Serializable{
+public class MessageDiff implements Serializable {
 
 	private static final long serialVersionUID = 190102684474375198L;
 	

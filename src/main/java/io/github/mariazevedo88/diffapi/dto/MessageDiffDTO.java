@@ -2,24 +2,24 @@ package io.github.mariazevedo88.diffapi.dto;
 
 import javax.validation.constraints.NotNull;
 
-import lombok.AllArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
 @ToString
-public class MessageDiffDTO {
+@EqualsAndHashCode(callSuper = false)
+public class MessageDiffDTO extends RepresentationModel<MessageDiffDTO>{
 
 	private Long id;
+	
 	@NotNull(message = "Offset cannot be null")
 	private int offset;
+	
 	@NotNull(message = "Length cannot be null")
 	private int length;
 }

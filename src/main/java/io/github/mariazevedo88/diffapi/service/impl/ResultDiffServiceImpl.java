@@ -1,5 +1,6 @@
 package io.github.mariazevedo88.diffapi.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -11,7 +12,7 @@ import io.github.mariazevedo88.diffapi.dto.ResultDiffDTO;
 import io.github.mariazevedo88.diffapi.enumeration.ResultDiffEnum;
 import io.github.mariazevedo88.diffapi.model.Message;
 import io.github.mariazevedo88.diffapi.model.ResultDiff;
-import io.github.mariazevedo88.diffapi.repository.ResultDiffRepository;
+import io.github.mariazevedo88.diffapi.repository.diff.ResultDiffRepository;
 import io.github.mariazevedo88.diffapi.service.ResultDiffService;
 
 @Service
@@ -58,7 +59,7 @@ public class ResultDiffServiceImpl implements ResultDiffService {
         String leftData = message.getLeftData();
         String rightData = message.getRightData();
         
-        logger.info(this.getClass() + ": [id = " + message.getId() + ", left = " + leftData + ", right = " + rightData + "]");
+        if(logger.isInfoEnabled()) logger.info(message.toString());
         
         ResultDiff result = new ResultDiff(message.getId());
         if (leftData.equals(rightData)) {
@@ -75,6 +76,11 @@ public class ResultDiffServiceImpl implements ResultDiffService {
 	@Override
 	public Optional<ResultDiff> findById(long id) {
 		return repository.findById(id);
+	}
+
+	@Override
+	public List<ResultDiff> findAll() {
+		return repository.findAll();
 	}
 
 }

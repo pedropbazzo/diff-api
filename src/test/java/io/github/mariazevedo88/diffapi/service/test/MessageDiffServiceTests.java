@@ -19,7 +19,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import io.github.mariazevedo88.diffapi.model.MessageDiff;
-import io.github.mariazevedo88.diffapi.repository.MessageDiffRepository;
+import io.github.mariazevedo88.diffapi.repository.diff.MessageDiffRepository;
 import io.github.mariazevedo88.diffapi.service.MessageDiffService;
 
 /**

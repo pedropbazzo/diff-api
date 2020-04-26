@@ -24,8 +24,4 @@ public interface MessageService {
 	
 	MessageDTO convertEntityToDTO(Message message);
 	
-	List<Message> convertListDTOToListEntity(List<MessageDTO> dto);
-	
-	List<MessageDTO> convertListEntityToListDTO(List<Message> message);
-
 }

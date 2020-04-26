@@ -9,9 +9,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Class that implements a message structure with an value
@@ -19,11 +23,14 @@ import lombok.NoArgsConstructor;
  * @author Mariana Azevedo
  * @since 23/07/2019
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "message")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Message implements Serializable {
 	
 	private static final long serialVersionUID = 6198714202345911094L;

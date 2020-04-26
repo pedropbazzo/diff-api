@@ -1,16 +1,15 @@
 package io.github.mariazevedo88.diffapi.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.github.mariazevedo88.diffapi.dto.MessageDTO;
 import io.github.mariazevedo88.diffapi.model.Message;
-import io.github.mariazevedo88.diffapi.repository.MessageRepository;
+import io.github.mariazevedo88.diffapi.repository.message.MessageRepository;
 import io.github.mariazevedo88.diffapi.service.MessageService;
 
 /**
@@ -28,23 +27,15 @@ public class MessageServiceImpl implements MessageService {
 	@Override
 	public Message convertDTOToEntity(MessageDTO dto) {
 		
-		Message message = new Message();
-		message.setId(dto.getId());
-		message.setLeftData(dto.getLeftData());
-		message.setRightData(dto.getRightData());
-		
-		return message;
+		ModelMapper modelMapper = new ModelMapper();
+		return modelMapper.map(dto, Message.class);
 	}
 	
 	@Override
 	public MessageDTO convertEntityToDTO(Message message) {
 		
-		MessageDTO messageDTO = new MessageDTO();
-		messageDTO.setId(message.getId());
-		messageDTO.setLeftData(message.getLeftData());
-		messageDTO.setRightData(message.getRightData());
-		
-		return messageDTO;
+		ModelMapper modelMapper = new ModelMapper();
+		return modelMapper.map(message, MessageDTO.class);
 	}
 	
 	@Override
@@ -67,24 +58,6 @@ public class MessageServiceImpl implements MessageService {
 	@Override
 	public Optional<Message> findById(Long messageId) {
 		return repository.findById(messageId);
-	}
-	
-	@Override
-	public List<Message> convertListDTOToListEntity(List<MessageDTO> dto) {
-		List<Message> messages = new ArrayList<>();
-		messages = dto.stream()
-		        .map(m -> new Message(m.getId(), m.getLeftData(), m.getRightData()))
-		        .collect(Collectors.toList());
-		return messages;
-	}
-
-	@Override
-	public List<MessageDTO> convertListEntityToListDTO(List<Message> message) {
-		List<MessageDTO> messages = new ArrayList<>();
-		messages = message.stream()
-		        .map(m -> new MessageDTO(m.getId(), m.getLeftData(), m.getRightData()))
-		        .collect(Collectors.toList());
-		return messages;
 	}
 	
 	@Override

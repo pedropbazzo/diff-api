@@ -19,7 +19,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import io.github.mariazevedo88.diffapi.model.ResultDiff;
-import io.github.mariazevedo88.diffapi.repository.ResultDiffRepository;
+import io.github.mariazevedo88.diffapi.repository.diff.ResultDiffRepository;
 import io.github.mariazevedo88.diffapi.service.ResultDiffService;
 
 @SpringBootTest

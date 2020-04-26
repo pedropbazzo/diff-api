@@ -1,4 +1,4 @@
-package io.github.mariazevedo88.diffapi.repository;
+package io.github.mariazevedo88.diffapi.repository.diff;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

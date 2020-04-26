@@ -42,8 +42,8 @@ public class DiffControllerTests {
 	
 	private static final Long ID_LEFT = 1L;
 	private static final Long ID_RIGHT = 2L;
-	private static final String LEFT_DATA = "Test";
-	private static final String RIGHT_DATA = "Test";
+	private static final String LEFT_DATA = "SGVsbG8gV29ybGQ=";
+	private static final String RIGHT_DATA = "SGVsbG8gV29ybGQ=";
 
 	@MockBean
 	private MessageService service;
@@ -58,8 +58,7 @@ public class DiffControllerTests {
 		
 		mockMvc.perform(post("/v1/diff/1/left")
 				.content(getLeftJsonPayload(LEFT_DATA))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
+				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isCreated())
 		.andDo(MockMvcResultHandlers.print());
 	}
@@ -71,8 +70,7 @@ public class DiffControllerTests {
 		
 		mockMvc.perform(post("/v1/diff/2/right")
 				.content(getRightJsonPayload(RIGHT_DATA))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
+				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isCreated())
 		.andDo(MockMvcResultHandlers.print());
 	}

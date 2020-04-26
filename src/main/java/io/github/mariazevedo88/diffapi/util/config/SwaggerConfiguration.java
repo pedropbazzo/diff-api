@@ -1,4 +1,4 @@
-package io.github.mariazevedo88.diffapi.config;
+package io.github.mariazevedo88.diffapi.util.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,9 +20,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  *
  */
 @Configuration
-@Profile("dev")
+@Profile({"dev", "prod"})
 @EnableSwagger2
-public class SwaggerConfig {
+public class SwaggerConfiguration {
 	
 	@Bean
 	public Docket api() {

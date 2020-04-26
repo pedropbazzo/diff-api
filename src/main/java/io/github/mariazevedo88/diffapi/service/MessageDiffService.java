@@ -1,5 +1,6 @@
 package io.github.mariazevedo88.diffapi.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import io.github.mariazevedo88.diffapi.dto.MessageDiffDTO;
@@ -27,5 +28,7 @@ public interface MessageDiffService {
 	MessageDiff checkDiffBetweenWords(Message message);
 
 	Optional<MessageDiff> findById(long id);
+	
+	List<MessageDiff> findAll();
 
 }

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import io.github.mariazevedo88.diffapi.dto.MessageDiffDTO;
 import io.github.mariazevedo88.diffapi.model.Message;
 import io.github.mariazevedo88.diffapi.model.MessageDiff;
-import io.github.mariazevedo88.diffapi.repository.MessageDiffRepository;
+import io.github.mariazevedo88.diffapi.repository.diff.MessageDiffRepository;
 import io.github.mariazevedo88.diffapi.service.MessageDiffService;
 
 @Service
@@ -77,7 +77,9 @@ public class MessageDiffServiceImpl implements MessageDiffService {
             diff = new MessageDiff(offset.intValue(), length.intValue());
         }
         
-        logger.info("Diffs: " + diff);
+        if(logger.isInfoEnabled() && diff != null){
+            logger.info(diff.toString());
+        }
         
         return diff;
 	}
@@ -85,6 +87,11 @@ public class MessageDiffServiceImpl implements MessageDiffService {
 	@Override
 	public Optional<MessageDiff> findById(long id) {
 		return repository.findById(id);
+	}
+
+	@Override
+	public List<MessageDiff> findAll() {
+		return repository.findAll();
 	}
 
 }

@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Class that implements a ResultDiff structure with an id, 
@@ -28,11 +29,12 @@ import lombok.Setter;
  * @author Mariana Azevedo
  * @since 08/03/2020
  */
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @Entity
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "result_diff")
 public class ResultDiff implements Serializable {
 

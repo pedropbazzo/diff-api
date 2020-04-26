@@ -19,7 +19,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 
 import io.github.mariazevedo88.diffapi.enumeration.ResultDiffEnum;
 import io.github.mariazevedo88.diffapi.model.ResultDiff;
-import io.github.mariazevedo88.diffapi.repository.ResultDiffRepository;
+import io.github.mariazevedo88.diffapi.repository.diff.ResultDiffRepository;
 
 @SpringBootTest
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
@@ -64,7 +64,7 @@ public class ResultDiffRepositoryTests {
 		Optional<ResultDiff> response = repository.findById(2L);
 		
 		assertTrue(response.isPresent());
-		assertEquals(response.get().getId(), 2L);
+		assertEquals(2L, response.get().getId());
 	}
 
 }

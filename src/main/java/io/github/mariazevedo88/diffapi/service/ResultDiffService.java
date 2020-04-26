@@ -1,5 +1,6 @@
 package io.github.mariazevedo88.diffapi.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import io.github.mariazevedo88.diffapi.dto.ResultDiffDTO;
@@ -27,5 +28,7 @@ public interface ResultDiffService {
 	ResultDiff compare (Message message);
 
 	Optional<ResultDiff> findById(long id);
+	
+	List<ResultDiff> findAll();
 	
 }

@@ -18,7 +18,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import io.github.mariazevedo88.diffapi.model.MessageDiff;
-import io.github.mariazevedo88.diffapi.repository.MessageDiffRepository;
+import io.github.mariazevedo88.diffapi.repository.diff.MessageDiffRepository;
 
 @SpringBootTest
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
@@ -61,7 +61,7 @@ public class MessageDiffRepositoryTests {
 		Optional<MessageDiff> response = repository.findById(2L);
 		
 		assertTrue(response.isPresent());
-		assertEquals(response.get().getId(), 2L);
+		assertEquals(2L, response.get().getId());
 	}
 
 }
