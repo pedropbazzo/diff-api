@@ -27,19 +27,19 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.github.mariazevedo88.diffapi.dto.MessageDTO;
-import io.github.mariazevedo88.diffapi.dto.ResultDiffDTO;
+import io.github.mariazevedo88.diffapi.dto.model.diff.ResultDiffDTO;
+import io.github.mariazevedo88.diffapi.dto.model.message.MessageDTO;
 import io.github.mariazevedo88.diffapi.dto.response.Response;
-import io.github.mariazevedo88.diffapi.enumeration.ResultDiffEnum;
 import io.github.mariazevedo88.diffapi.exception.DiffException;
 import io.github.mariazevedo88.diffapi.exception.DiffNotFoundException;
 import io.github.mariazevedo88.diffapi.exception.InvalidBase64Exception;
 import io.github.mariazevedo88.diffapi.exception.MessageNotFoundException;
-import io.github.mariazevedo88.diffapi.model.Message;
-import io.github.mariazevedo88.diffapi.model.ResultDiff;
-import io.github.mariazevedo88.diffapi.service.MessageDiffService;
-import io.github.mariazevedo88.diffapi.service.MessageService;
-import io.github.mariazevedo88.diffapi.service.ResultDiffService;
+import io.github.mariazevedo88.diffapi.model.diff.ResultDiff;
+import io.github.mariazevedo88.diffapi.model.enumeration.ResultDiffEnum;
+import io.github.mariazevedo88.diffapi.model.message.Message;
+import io.github.mariazevedo88.diffapi.service.diff.MessageDiffService;
+import io.github.mariazevedo88.diffapi.service.diff.ResultDiffService;
+import io.github.mariazevedo88.diffapi.service.message.MessageService;
 import io.github.mariazevedo88.diffapi.util.DiffApiUtil;
 import io.swagger.annotations.ApiOperation;
 
@@ -71,10 +71,22 @@ public class DiffController {
 	 * @author Mariana Azevedo
 	 * @since 08/03/2020
 	 * 
-	 * @return ResponseEntity - 200
-	 * @throws MessageNotFoundException 
+	 * @param apiVersion
+	 * 
+	 * @return ResponseEntity with a Response<List<ResultDiffDTO>> object and the HTTP status
+	 * 
+	 * HTTP Status:
+	 * 
+	 * 200 - OK: Everything worked as expected.
+	 * 404 - Not Found: The requested resource doesn't exist.
+	 * 409 - Conflict: The request conflicts with another request (perhaps due to using the same idempotent key).
+	 * 429 - Too Many Requests: Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.
+	 * 500, 502, 503, 504 - Server Errors: something went wrong on API end (These are rare).
+	 * 
+	 * @throws DiffNotFoundException
 	 */
 	@GetMapping(path = "/all", produces = { "application/hal+json" })
+	@ApiOperation(value = "Route to find all diffs created in the API")
 	public ResponseEntity<Response<List<ResultDiffDTO>>> findAllDiffs(@RequestHeader(value=DiffApiUtil.DIFF_API_VERSION_HEADER, 
 		defaultValue="${api.version}") String apiVersion) throws DiffNotFoundException {
 		
@@ -109,45 +121,70 @@ public class DiffController {
 	 * @author Mariana Azevedo
 	 * @since 23/07/2019
 	 * 
+	 * @param apiVersion
 	 * @param id
-	 * @param message
-	 * @return ResponseEntity - 201, if is created with success;
-	 * 		   ResponseEntity - 200, if is an update on the Message object;
-	 *         ResponseEntity - 400, if the request has errors or invalid base64 string;
-	 *         ResponseEntity
-	 * @throws Exception 
+	 * @param dto
+	 * @param result
+	 * 
+	 * @return ResponseEntity with a Response<MessageDTO> object and the HTTP status
+	 * 
+	 * HTTP Status:
+	 * 
+	 * 200 - OK: Everything worked as expected.
+	 * 404 - Not Found: The requested resource doesn't exist.
+	 * 409 - Conflict: The request conflicts with another request (perhaps due to using the same idempotent key).
+	 * 422 – Unprocessable Entity: if any of the fields are not parsable.
+	 * 429 - Too Many Requests: Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.
+	 * 500, 502, 503, 504 - Server Errors: something went wrong on API end (These are rare).
+	 * 
+	 * @throws InvalidBase64Exception 
 	 */
 	@PostMapping(path = "/{id}/left", produces = { "application/hal+json" })
+	@ApiOperation(value = "Route to save the left data from a message by id in the API")
 	public ResponseEntity<Response<MessageDTO>> saveLeftMessage(@RequestHeader(value=DiffApiUtil.DIFF_API_VERSION_HEADER, 
 		defaultValue="${api.version}") String apiVersion, @PathVariable("id") long id, @Valid @RequestBody MessageDTO dto, 
 		BindingResult result) throws InvalidBase64Exception {
 
 		Response<MessageDTO> response = new Response<>();
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		headers.add(DiffApiUtil.DIFF_API_VERSION_HEADER, apiVersion);
 
 		if(result.hasErrors()) {
 			result.getAllErrors().forEach(e -> response.addErrorMsgToResponse(e.getDefaultMessage()));
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			return new ResponseEntity<>(response, headers, HttpStatus.BAD_REQUEST);
 		}
 		
 		if(!DiffApiUtil.isEncodedBase64(dto.getLeftData())) {
 			throw new InvalidBase64Exception("The leftData " + dto.getLeftData() + " is a invalid Base64 String.");
 		}
-		
+
 		String leftData = DiffApiUtil.encodeToBase64(dto.getLeftData().getBytes());
 		dto.setLeftData(leftData);
 		
 		if(messageService.exist(id)) {
 			updateLeftMessage(id, dto, response);
-			return ResponseEntity.status(HttpStatus.OK).body(response);
+			return new ResponseEntity<>(response, headers, HttpStatus.OK);
 		}
 		
-		Message messageToCreate = messageService.convertDTOToEntity(dto);
-		Message message = messageService.save(messageToCreate);
-		response.setData(messageService.convertEntityToDTO(message));
+		Message message = messageService.save(messageService.convertDTOToEntity(dto));
+		MessageDTO messageDTO = messageService.convertEntityToDTO(message);
+		createMessageSelfLink(message, messageDTO);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+		response.setData(messageDTO);
+		
+		return new ResponseEntity<>(response, headers, HttpStatus.CREATED);
 	}
 
+	/**
+	 * Method that update the left data of a message with the message already exists.
+	 * 
+	 * @author Mariana Azevedo
+	 * @since 26/04/2020
+	 * 
+	 * @param id
+	 * @param dto
+	 * @param response
+	 */
 	private void updateLeftMessage(long id, MessageDTO dto, Response<MessageDTO> response) {
 		
 		Optional<Message> optionalMessage = messageService.findById(id);
@@ -158,9 +195,11 @@ public class DiffController {
 			dto.setRightData(message.getRightData());
 		}
 
-		Message messageToUpdate = messageService.convertDTOToEntity(dto);
-		Message message = messageService.updateRightData(messageToUpdate);
-		response.setData(messageService.convertEntityToDTO(message));
+		Message message = messageService.updateRightData(messageService.convertDTOToEntity(dto));
+		MessageDTO messageDTO = messageService.convertEntityToDTO(message);
+		
+		createMessageSelfLink(message, messageDTO);
+		response.setData(messageDTO);
 	}
 
 	/**
@@ -169,42 +208,70 @@ public class DiffController {
 	 * @author Mariana Azevedo
 	 * @since 23/07/2019
 	 * 
+	 * @param apiVersion
 	 * @param id
-	 * @param message
-	 * @return ResponseEntity - 201, if is created with success or 500 if isn't.
-	 * @throws Exception 
+	 * @param dto
+	 * @param result
+	 * 
+	 * @return ResponseEntity with a Response<MessageDTO> object and the HTTP status
+	 * 
+	 * HTTP Status:
+	 * 
+	 * 200 - OK: Everything worked as expected.
+	 * 404 - Not Found: The requested resource doesn't exist.
+	 * 409 - Conflict: The request conflicts with another request (perhaps due to using the same idempotent key).
+	 * 422 – Unprocessable Entity: if any of the fields are not parsable.
+	 * 429 - Too Many Requests: Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.
+	 * 500, 502, 503, 504 - Server Errors: something went wrong on API end (These are rare).
+	 * 
+	 * @throws InvalidBase64Exception 
 	 */
 	@PostMapping(path = "/{id}/right", produces = { "application/hal+json" })
+	@ApiOperation(value = "Route to save the right data from a message by id in the API")
 	public ResponseEntity<Response<MessageDTO>> saveRightMessage(@RequestHeader(value=DiffApiUtil.DIFF_API_VERSION_HEADER, 
 		defaultValue="${api.version}") String apiVersion, @PathVariable("id") long id, @Valid @RequestBody MessageDTO dto, 
 		BindingResult result) throws InvalidBase64Exception {
 
 		Response<MessageDTO> response = new Response<>();
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		headers.add(DiffApiUtil.DIFF_API_VERSION_HEADER, apiVersion);
 		
 		if(result.hasErrors()) {
 			result.getAllErrors().forEach(e -> response.addErrorMsgToResponse(e.getDefaultMessage()));
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			return new ResponseEntity<>(response, headers, HttpStatus.BAD_REQUEST);
 		}
 		
 		if(!DiffApiUtil.isEncodedBase64(dto.getRightData())) {
 			throw new InvalidBase64Exception("The rightData " + dto.getRightData() + " is a invalid Base64 String.");
 		}
-		
+
 		String rightData = DiffApiUtil.encodeToBase64(dto.getRightData().getBytes());
 		dto.setRightData(rightData);
 		
 		if(messageService.exist(id)) {
 			updateRightMessage(id, dto, response);
-			return ResponseEntity.status(HttpStatus.OK).body(response);
+			return new ResponseEntity<>(response, headers, HttpStatus.OK);
 		}
 		
-		Message messageToCreate = messageService.convertDTOToEntity(dto);
-		Message message = messageService.save(messageToCreate);
-		response.setData(messageService.convertEntityToDTO(message));
+		Message message = messageService.save(messageService.convertDTOToEntity(dto));
+		MessageDTO messageDTO = messageService.convertEntityToDTO(message);
+		createMessageSelfLink(message, messageDTO);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+		response.setData(messageDTO);
+		
+		return new ResponseEntity<>(response, headers, HttpStatus.CREATED);
 	}
 
+	/**
+	 * Method that update the right data of a message with the message already exists.
+	 * 
+	 * @author Mariana Azevedo
+	 * @since 26/04/2020
+	 * 
+	 * @param id
+	 * @param dto
+	 * @param response
+	 */
 	private void updateRightMessage(long id, MessageDTO dto, Response<MessageDTO> response) {
 		
 		Optional<Message> optionalMessage = messageService.findById(id);
@@ -215,9 +282,11 @@ public class DiffController {
 			dto.setLeftData(message.getLeftData());
 		}
 
-		Message messageToUpdate = messageService.convertDTOToEntity(dto);
-		Message message = messageService.updateRightData(messageToUpdate);
-		response.setData(messageService.convertEntityToDTO(message));
+		Message message = messageService.updateRightData(messageService.convertDTOToEntity(dto));
+		MessageDTO messageDTO = messageService.convertEntityToDTO(message);
+		
+		createMessageSelfLink(message, messageDTO);
+		response.setData(messageDTO);
 	}
 
 	/**
@@ -226,12 +295,24 @@ public class DiffController {
 	 * @author Mariana Azevedo
 	 * @since 23/07/2019
 	 * 
+	 * @param apiVersion
 	 * @param id
-	 * @return ResponseEntity - 200, if the id exists or 500 if isn't.
+	 * @return ResponseEntity with a Response<ResultDiffDTO> object and the HTTP status
+	 * 
+	 * HTTP Status:
+	 * 
+	 * 200 - OK: Everything worked as expected.
+	 * 404 - Not Found: The requested resource doesn't exist.
+	 * 409 - Conflict: The request conflicts with another request (perhaps due to using the same idempotent key).
+	 * 422 – Unprocessable Entity: if any of the fields are not parsable.
+	 * 429 - Too Many Requests: Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.
+	 * 500, 502, 503, 504 - Server Errors: something went wrong on API end (These are rare).
+	 * 
 	 * @throws DiffException 
 	 * @throws DiffNotFoundException 
 	 */
 	@GetMapping(path = "/{id}", produces = { "application/hal+json" })
+	@ApiOperation(value = "Route to execute the compare the left and right data from a message by id in the API")
 	public ResponseEntity<Response<ResultDiffDTO>> compare(@RequestHeader(value=DiffApiUtil.DIFF_API_VERSION_HEADER, 
 		defaultValue="${api.version}") String apiVersion, @PathVariable("id") long id) throws DiffException, DiffNotFoundException {
 
@@ -267,7 +348,10 @@ public class DiffController {
 	}
 	
 	/**
-	 * Method that search a transactions by the id.
+	 * Method that search for the left data of a message by the message id.
+	 * 
+	 * @author Mariana Azevedo
+	 * @since 25/04/2020
 	 * 
 	 * @param apiVersion
 	 * @param messageId
@@ -276,17 +360,15 @@ public class DiffController {
 	 * HTTP Status:
 	 * 
 	 * 200 - OK: Everything worked as expected.
-	 * 400 - Bad Request: The request was unacceptable, often due to missing a required parameter.
 	 * 404 - Not Found: The requested resource doesn't exist.
 	 * 409 - Conflict: The request conflicts with another request (perhaps due to using the same idempotent key).
 	 * 429 - Too Many Requests: Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.
 	 * 500, 502, 503, 504 - Server Errors: something went wrong on API end (These are rare).
-	 * @throws MessageNotFoundException 
 	 * 
-	 * @throws TransactionNotFoundException
+	 * @throws MessageNotFoundException 
 	 */
 	@GetMapping(value = "/{id}/left")
-	@ApiOperation(value = "Route to find a left message by your id in the API")
+	@ApiOperation(value = "Route to find a left message by id in the API")
 	public ResponseEntity<Response<MessageDTO>> getLeftMessage(@RequestHeader(value=DiffApiUtil.DIFF_API_VERSION_HEADER, 
 		defaultValue="${api.version}") String apiVersion, @PathVariable("id") Long messageId) throws MessageNotFoundException {
 		
@@ -294,7 +376,10 @@ public class DiffController {
 	}
 	
 	/**
-	 * Method that search a transactions by the id.
+	 * Method that search for the right data of a message by the message id.
+	 * 
+	 * @author Mariana Azevedo
+	 * @since 25/04/2020
 	 * 
 	 * @param apiVersion
 	 * @param messageId
@@ -303,23 +388,41 @@ public class DiffController {
 	 * HTTP Status:
 	 * 
 	 * 200 - OK: Everything worked as expected.
-	 * 400 - Bad Request: The request was unacceptable, often due to missing a required parameter.
 	 * 404 - Not Found: The requested resource doesn't exist.
 	 * 409 - Conflict: The request conflicts with another request (perhaps due to using the same idempotent key).
 	 * 429 - Too Many Requests: Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.
 	 * 500, 502, 503, 504 - Server Errors: something went wrong on API end (These are rare).
-	 * @throws MessageNotFoundException 
 	 * 
-	 * @throws TransactionNotFoundException
+	 * @throws MessageNotFoundException 
 	 */
 	@GetMapping(value = "/{id}/right")
-	@ApiOperation(value = "Route to find a right message by your id in the API")
+	@ApiOperation(value = "Route to find a right message by id in the API")
 	public ResponseEntity<Response<MessageDTO>> getRightMessage(@RequestHeader(value=DiffApiUtil.DIFF_API_VERSION_HEADER, 
 		defaultValue="${api.version}") String apiVersion, @PathVariable("id") Long messageId) throws MessageNotFoundException {
 		
 		return getMessageById(apiVersion, messageId);
 	}
 
+	/**
+	 * Method that search a message by id.
+	 * 
+	 * @author Mariana Azevedo
+	 * @since 25/04/2020
+	 * 
+	 * @param apiVersion
+	 * @param transactionId
+	 * @return ResponseEntity with a Response<MessageDTO> object and the HTTP status
+	 * 
+	 * HTTP Status:
+	 * 
+	 * 200 - OK: Everything worked as expected.
+	 * 404 - Not Found: The requested resource doesn't exist.
+	 * 409 - Conflict: The request conflicts with another request (perhaps due to using the same idempotent key).
+	 * 429 - Too Many Requests: Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.
+	 * 500, 502, 503, 504 - Server Errors: something went wrong on API end (These are rare).
+	 * 
+	 * @throws MessageNotFoundException
+	 */
 	private ResponseEntity<Response<MessageDTO>> getMessageById(String apiVersion, Long transactionId)
 			throws MessageNotFoundException {
 		
@@ -342,27 +445,28 @@ public class DiffController {
 	}
 	
 	/**
-	 * Method that search a transactions by the id.
+	 * Method that search a diff by the id.
+	 * 
+	 * @author Mariana Azevedo
+	 * @since 25/04/2020
 	 * 
 	 * @param apiVersion
 	 * @param diffId
-	 * @return ResponseEntity with a Response<TransactionDTO> object and the HTTP status
+	 * @return ResponseEntity with a Response<ResultDiffDTO> object and the HTTP status
 	 * 
 	 * HTTP Status:
 	 * 
 	 * 200 - OK: Everything worked as expected.
-	 * 400 - Bad Request: The request was unacceptable, often due to missing a required parameter.
 	 * 404 - Not Found: The requested resource doesn't exist.
 	 * 409 - Conflict: The request conflicts with another request (perhaps due to using the same idempotent key).
 	 * 429 - Too Many Requests: Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.
 	 * 500, 502, 503, 504 - Server Errors: something went wrong on API end (These are rare).
+	 * 
 	 * @throws MessageNotFoundException 
 	 * @throws DiffNotFoundException 
-	 * 
-	 * @throws TransactionNotFoundException
 	 */
 	@GetMapping(value = "/byId/{id}")
-	@ApiOperation(value = "Route to find a diff by your id in the API")
+	@ApiOperation(value = "Route to find a diff by id in the API")
 	public ResponseEntity<Response<ResultDiffDTO>> getDiffById(@RequestHeader(value=DiffApiUtil.DIFF_API_VERSION_HEADER, 
 		defaultValue="${api.version}") String apiVersion, @PathVariable("id") Long diffId) throws DiffNotFoundException {
 		
@@ -399,7 +503,7 @@ public class DiffController {
 	}
 	
 	/**
-	 * Method that creates a self link to message object
+	 * Method that creates a self link to result diff object
 	 * 
 	 * @author Mariana Azevedo
 	 * @since 25/04/2020
@@ -414,7 +518,7 @@ public class DiffController {
 	}
 	
 	/**
-	 * Method that creates a self link in a collection of transactions
+	 * Method that creates a self link in a collection of result diffs
 	 * 
 	 * @author Mariana Azevedo
 	 * @since 25/04/2020

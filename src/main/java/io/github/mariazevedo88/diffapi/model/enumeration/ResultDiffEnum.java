@@ -1,4 +1,4 @@
-package io.github.mariazevedo88.diffapi.enumeration;
+package io.github.mariazevedo88.diffapi.model.enumeration;
 
 /**
  * Enum that classifies the types of comparison's results that ComparatorService provides.

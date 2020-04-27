@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import io.github.mariazevedo88.diffapi.model.Message;
+import io.github.mariazevedo88.diffapi.model.message.Message;
 import io.github.mariazevedo88.diffapi.repository.message.MessageRepository;
 
 @SpringBootTest
@@ -50,16 +50,16 @@ public class MessageRepositoryTests {
 		message.setRightData("Test");
 		
 		Message response = repository.save(message);
-		
 		assertNotNull(response);
 	}
 	
 	@Test
 	public void testFindById(){
+		
 		Optional<Message> response = repository.findById(1L);
 		
 		assertTrue(response.isPresent());
-		assertEquals(response.get().getId(), 1L);
+		assertEquals(1L, response.get().getId());
 	}
 
 }

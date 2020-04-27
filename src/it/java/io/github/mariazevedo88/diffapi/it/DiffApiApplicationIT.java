@@ -1,32 +1,30 @@
 package io.github.mariazevedo88.diffapi.it;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.net.URL;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.github.mariazevedo88.diffapi.dto.MessageDTO;
-import io.github.mariazevedo88.diffapi.enumeration.ResultDiffEnum;
+import io.github.mariazevedo88.diffapi.dto.model.message.MessageDTO;
+import io.github.mariazevedo88.diffapi.model.enumeration.ResultDiffEnum;
 
 /**
  * Class that implements API integration tests
@@ -34,140 +32,192 @@ import io.github.mariazevedo88.diffapi.enumeration.ResultDiffEnum;
  * @author Mariana Azevedo
  * @since 08/03/2020
  */
-@SpringBootTest
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, MockitoTestExecutionListener.class })
-@AutoConfigureMockMvc
 @ActiveProfiles("test")
 @DisplayName("DiffApiApplicationIT")
-@TestInstance(Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.Alphanumeric.class)
+@TestMethodOrder(OrderAnnotation.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class DiffApiApplicationIT {
 
-	@Autowired
-    private MockMvc mockMvc;
+	@LocalServerPort
+	private int port;
+	 
+    @Autowired
+    private TestRestTemplate restTemplate;
 	
-	@Test
+    @Test
+    @Order(1)
 	@DisplayName("Verify if JSON Base64 was created in the left endpoint")
-	public void test0ShouldCreateJSONBase64InLeftEndpoint() throws Exception {
-		
-		this.mockMvc.perform(post("/v1/diff/1/left")
-				.content(getLeftJsonPayload("VGVzdGU="))
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isCreated())
-				.andDo(MockMvcResultHandlers.print());
+	public void shouldCreateJSONBase64InLeftEndpoint() throws Exception {
+    	
+    	RequestEntity<String> requestEntity = RequestEntity.post(
+    		new URL("http://localhost:" + port + "/v1/diff/1/left").toURI())
+    		.contentType(MediaType.APPLICATION_JSON).body(getLeftJsonPayload(1L, "VGVzdGU=")); 
+    	ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+    	
+        assertEquals(201, responseEntity.getStatusCodeValue());
 	}
 	
 	@Test
+	@Order(2)
 	@DisplayName("Verify if JSON Base64 was created in the right endpoint")
-	public void test1ShouldCreateJSONBase64InRightEndpoint() throws Exception {
+	public void shouldCreateJSONBase64InRightEndpoint() throws Exception {
 		
-		this.mockMvc.perform(post("/v1/diff/1/right")
-				.content(getRightJsonPayload("VGVzdGU="))
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isCreated())
-				.andDo(MockMvcResultHandlers.print());
-	}
-	
-//	@Test
-//	@DisplayName("Checks if endpoint message comparison returns equal.")
-//	public void test2ShouldTheComparisonResultBeEqual() throws Exception {
-//		
-//		this.mockMvc.perform(get("/v1/diff/1"))
-//				.andExpect(status().isOk())
-//				.andDo(MockMvcResultHandlers.print())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.data.result")
-//						.value(ResultDiffEnum.EQUAL.getValue()));
-//	}
-	
-//	@Test
-//	@DisplayName("Returns all messages' list")
-//    public void test3ShouldReturnEmptyListMessagesCreated() throws Exception {
-//        this.mockMvc.perform(get("/v1/diff/all")).andExpect(status().isOk());
-//    }
-	
-	@Test
-	@DisplayName("Send invalid data to the left endpoint")
-	public void test4ShouldSendInvalidDataToLeftEndpoint() throws Exception {
-		
-		this.mockMvc.perform(post("/v1/diff/4/left")
-				.content(getRightJsonPayload("Test"))
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().is5xxServerError())
-				.andDo(MockMvcResultHandlers.print());
+		RequestEntity<String> requestEntity = RequestEntity.post(
+    		new URL("http://localhost:" + port + "/v1/diff/1/right").toURI())
+    		.contentType(MediaType.APPLICATION_JSON).body(getRightJsonPayload(1L, "VGVzdGU=")); 
+    	ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+	    	
+	    assertEquals(200, responseEntity.getStatusCodeValue());
 	}
 	
 	@Test
-	@DisplayName("Send invalid data to the right endpoint")
-	public void test5ShouldSendInvalidDataToRightEndpoint() throws Exception {
+	@Order(3)
+	@DisplayName("Checks if endpoint message comparison returns equal.")
+	public void shouldTheComparisonResultBeEqual() throws Exception {
 		
-		this.mockMvc.perform(post("/v1/diff/4/right")
-				.content(getLeftJsonPayload("Test"))
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().is5xxServerError())
-				.andDo(MockMvcResultHandlers.print());
+		ResponseEntity<String> responseEntity = this.restTemplate
+		           .getForEntity("http://localhost:" + port + "/v1/diff/1", String.class);
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode root = objectMapper.readTree(responseEntity.getBody());
+        
+		assertEquals(200, responseEntity.getStatusCodeValue());
+		assertEquals(ResultDiffEnum.EQUAL.getValue(), root.get("data").get("result").textValue());
+	}
+
+	@Test
+    @Order(4)
+	@DisplayName("Returns all diffs' list")
+    public void shouldFindAllDiffs() {
+    	
+    	ResponseEntity<String> responseEntity = this.restTemplate
+           .getForEntity("http://localhost:" + port + "/v1/diff/all", String.class);
+                
+        assertEquals(200, responseEntity.getStatusCodeValue());
+    }
+	
+	@Test
+	@Order(5)
+	@DisplayName("Send null data to the left endpoint")
+	public void shouldSendInvalidDataToLeftEndpoint() throws Exception {
+		
+		RequestEntity<String> requestEntity = RequestEntity.post(
+	    		new URL("http://localhost:" + port + "/v1/diff/2/left").toURI())
+	    		.contentType(MediaType.APPLICATION_JSON).body(getLeftJsonPayload(2L, null)); 
+	    ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+	            
+	    assertEquals(500, responseEntity.getStatusCodeValue());
 	}
 	
-//	@Test
-//	@DisplayName("Verify if JSON Base64 was updated in the right endpoint")
-//	public void test6ShouldUpdateJSONBase64InRightEndpoint() throws Exception {
-//		
-//		this.mockMvc.perform(post("/v1/diff/1/right")
-//				.content(getRightJsonPayload("Q2VsdWxhcg=="))
-//				.contentType(MediaType.APPLICATION_JSON_VALUE))
-//				.andExpect(status().isOk())
-//				.andDo(MockMvcResultHandlers.print());
-//	}
-//	
-//	@Test
-//	@DisplayName("Checks if endpoint message comparison returns different by size.")
-//	public void test7ShouldTheComparisonResultBeDifferentSize() throws Exception {
-//		
-//		this.mockMvc.perform(get("/v1/diff/1"))
-//				.andExpect(status().isOk())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.data.result")
-//						.value(ResultDiffEnum.DIFFERENT_SIZE.getValue()));
-//	}
-//	
-//	@Test
-//	@DisplayName("Verify if JSON Base64 was updated all endpoints")
-//	public void test8ShouldUpdateJSONBase64Endpoints() throws Exception {
-//		
-//		this.mockMvc.perform(post("/v1/diff/1/left")
-//				.content(getLeftJsonPayload("TWFuYW5h"))
-//				.contentType(MediaType.APPLICATION_JSON_VALUE))
-//				.andExpect(status().isOk())
-//				.andDo(MockMvcResultHandlers.print());
-//		
-//		this.mockMvc.perform(post("/v1/diff/1/right")
-//				.content(getRightJsonPayload("QmFuYW5h"))
-//				.contentType(MediaType.APPLICATION_JSON_VALUE))
-//				.andExpect(status().isOk())
-//				.andDo(MockMvcResultHandlers.print());
-//	}
-//	
-//	@Test
-//	@DisplayName("Checks if endpoint message comparison returns completely different strings.")
-//	public void test9ShouldTheComparisonResultBeCompletelyDifferent() throws Exception {
-//		
-//		this.mockMvc.perform(get("/v1/diff/1"))
-//				.andExpect(status().isOk())
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.data.result").value(ResultDiffEnum.DIFFERENT.getValue()))
-//				.andExpect(MockMvcResultMatchers.jsonPath("$.data.diff.offset").value(0))
-//	        	.andExpect(MockMvcResultMatchers.jsonPath("$.data.diff.length").value(3));
-//	}
+	@Test
+	@Order(6)
+	@DisplayName("Send null data to the right endpoint")
+	public void shouldSendInvalidDataToRightEndpoint() throws Exception {
+		
+		RequestEntity<String> requestEntity = RequestEntity.post(
+	    		new URL("http://localhost:" + port + "/v1/diff/2/right").toURI())
+	    		.contentType(MediaType.APPLICATION_JSON).body(getRightJsonPayload(2L, null)); 
+	    ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+	            
+	    assertEquals(500, responseEntity.getStatusCodeValue());
+	}
 	
-	public String getLeftJsonPayload(String leftData) throws JsonProcessingException {
+	@Test
+	@Order(7)
+	@DisplayName("Create JSON Base64 with id=2 in the left endpoint")
+	public void shouldCreateNewDataToLeftEndpoint() throws Exception {
+		
+		RequestEntity<String> requestEntity = RequestEntity.post(
+	    		new URL("http://localhost:" + port + "/v1/diff/2/left").toURI())
+	    		.contentType(MediaType.APPLICATION_JSON).body(getLeftJsonPayload(2L, "QmFuYW5h")); 
+	    ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+	            
+	    assertEquals(201, responseEntity.getStatusCodeValue());
+	}
+	
+	@Test
+	@Order(8)
+	@DisplayName("Create JSON Base64 with id=2 in the right endpoint")
+	public void shouldCreateNewDataToRightEndpoint() throws Exception {
+		
+		RequestEntity<String> requestEntity = RequestEntity.post(
+	    		new URL("http://localhost:" + port + "/v1/diff/2/right").toURI())
+	    		.contentType(MediaType.APPLICATION_JSON).body(getRightJsonPayload(2L, "TWHDsWFuYQ==")); 
+	    ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+	            
+	    assertEquals(200, responseEntity.getStatusCodeValue());
+	}
+	
+	@Test
+	@Order(9)
+	@DisplayName("Checks if endpoint message comparison returns different by size.")
+	public void shouldTheComparisonResultBeDifferentSize() throws Exception {
+		
+		ResponseEntity<String> responseEntity = this.restTemplate
+		           .getForEntity("http://localhost:" + port + "/v1/diff/2", String.class);
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode root = objectMapper.readTree(responseEntity.getBody());
+     
+		assertEquals(200, responseEntity.getStatusCodeValue());
+		assertEquals(ResultDiffEnum.DIFFERENT_SIZE.getValue(), root.get("data").get("result").textValue());
+	}
+	
+	@Test
+	@Order(10)
+	@DisplayName("Create JSON Base64 with id=3 in the left endpoint")
+	public void shouldCreateAnotherDataToLeftEndpoint() throws Exception {
+		
+		RequestEntity<String> requestEntity = RequestEntity.post(
+	    		new URL("http://localhost:" + port + "/v1/diff/3/left").toURI())
+	    		.contentType(MediaType.APPLICATION_JSON).body(getLeftJsonPayload(3L, "QmlrZQ==")); 
+	    ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+	            
+	    assertEquals(201, responseEntity.getStatusCodeValue());
+	}
+	
+	@Test
+	@Order(11)
+	@DisplayName("Create JSON Base64 with id=3 in the right endpoint")
+	public void shouldCreateAnotherDataToRightEndpoint() throws Exception {
+		
+		RequestEntity<String> requestEntity = RequestEntity.post(
+	    		new URL("http://localhost:" + port + "/v1/diff/3/right").toURI())
+	    		.contentType(MediaType.APPLICATION_JSON).body(getRightJsonPayload(3L, "S2l0ZQ==")); 
+	    ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+	            
+	    assertEquals(200, responseEntity.getStatusCodeValue());
+	}
+	
+	@Test
+	@Order(12)
+	@DisplayName("Checks if endpoint message comparison returns completely different strings.")
+	public void shouldTheComparisonResultBeCompletelyDifferent() throws Exception {
+		
+		ResponseEntity<String> responseEntity = this.restTemplate
+		           .getForEntity("http://localhost:" + port + "/v1/diff/3", String.class);
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode root = objectMapper.readTree(responseEntity.getBody());
+     
+		assertEquals(200, responseEntity.getStatusCodeValue());
+		assertEquals(ResultDiffEnum.DIFFERENT.getValue(), root.get("data").get("result").textValue());
+	}
+	
+	public String getLeftJsonPayload(Long id, String leftData) throws JsonProcessingException {
 		
 		MessageDTO dto = new MessageDTO();
+		dto.setId(id);
 		dto.setLeftData(leftData);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.writeValueAsString(dto);
 	}
 	
-	public String getRightJsonPayload(String rightData) throws JsonProcessingException {
+	public String getRightJsonPayload(Long id, String rightData) throws JsonProcessingException {
 		
 		MessageDTO dto = new MessageDTO();
+		dto.setId(id);
 		dto.setRightData(rightData);
 		
 		ObjectMapper mapper = new ObjectMapper();

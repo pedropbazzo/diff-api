@@ -23,9 +23,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.github.mariazevedo88.diffapi.dto.MessageDTO;
-import io.github.mariazevedo88.diffapi.model.Message;
-import io.github.mariazevedo88.diffapi.service.MessageService;
+import io.github.mariazevedo88.diffapi.dto.model.message.MessageDTO;
+import io.github.mariazevedo88.diffapi.model.message.Message;
+import io.github.mariazevedo88.diffapi.service.message.MessageService;
 
 /**
  * Spring test class for DiffController

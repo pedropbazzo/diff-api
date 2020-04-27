@@ -1,4 +1,4 @@
-package io.github.mariazevedo88.diffapi.service.impl;
+package io.github.mariazevedo88.diffapi.service.diff.impl;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.github.mariazevedo88.diffapi.dto.MessageDiffDTO;
-import io.github.mariazevedo88.diffapi.model.Message;
-import io.github.mariazevedo88.diffapi.model.MessageDiff;
+import io.github.mariazevedo88.diffapi.dto.model.diff.MessageDiffDTO;
+import io.github.mariazevedo88.diffapi.model.diff.MessageDiff;
+import io.github.mariazevedo88.diffapi.model.message.Message;
 import io.github.mariazevedo88.diffapi.repository.diff.MessageDiffRepository;
-import io.github.mariazevedo88.diffapi.service.MessageDiffService;
+import io.github.mariazevedo88.diffapi.service.diff.MessageDiffService;
 
 @Service
 public class MessageDiffServiceImpl implements MessageDiffService {

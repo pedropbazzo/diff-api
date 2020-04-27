@@ -18,9 +18,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import io.github.mariazevedo88.diffapi.model.ResultDiff;
+import io.github.mariazevedo88.diffapi.model.diff.ResultDiff;
 import io.github.mariazevedo88.diffapi.repository.diff.ResultDiffRepository;
-import io.github.mariazevedo88.diffapi.service.ResultDiffService;
+import io.github.mariazevedo88.diffapi.service.diff.ResultDiffService;
 
 @SpringBootTest
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, MockitoTestExecutionListener.class })

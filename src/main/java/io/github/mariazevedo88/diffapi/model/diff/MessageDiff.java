@@ -1,4 +1,4 @@
-package io.github.mariazevedo88.diffapi.model;
+package io.github.mariazevedo88.diffapi.model.diff;
 
 import java.io.Serializable;
 

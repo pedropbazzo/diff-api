@@ -34,7 +34,7 @@ public class SwaggerConfiguration {
 
 	private ApiInfo apiInfo() {
 		return new ApiInfoBuilder().title("Diff API")
-				.description("Diff API - Documentation.").version("1.1.0")
+				.description("Diff API - Documentation").version("2.0.0")
 				.build();
 	}
 

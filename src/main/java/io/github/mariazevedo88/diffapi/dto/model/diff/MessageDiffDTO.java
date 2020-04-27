@@ -1,4 +1,4 @@
-package io.github.mariazevedo88.diffapi.dto;
+package io.github.mariazevedo88.diffapi.dto.model.diff;
 
 import javax.validation.constraints.NotNull;
 

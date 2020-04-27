@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import io.github.mariazevedo88.diffapi.model.MessageDiff;
+import io.github.mariazevedo88.diffapi.model.diff.MessageDiff;
 import io.github.mariazevedo88.diffapi.repository.diff.MessageDiffRepository;
 
 @SpringBootTest

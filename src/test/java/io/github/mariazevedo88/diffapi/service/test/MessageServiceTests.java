@@ -18,9 +18,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import io.github.mariazevedo88.diffapi.model.Message;
+import io.github.mariazevedo88.diffapi.model.message.Message;
 import io.github.mariazevedo88.diffapi.repository.message.MessageRepository;
-import io.github.mariazevedo88.diffapi.service.MessageService;
+import io.github.mariazevedo88.diffapi.service.message.MessageService;
 
 @SpringBootTest
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, MockitoTestExecutionListener.class })

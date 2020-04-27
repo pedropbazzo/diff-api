@@ -1,4 +1,4 @@
-package io.github.mariazevedo88.diffapi.model;
+package io.github.mariazevedo88.diffapi.model.diff;
 
 import java.io.Serializable;
 
@@ -15,7 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import io.github.mariazevedo88.diffapi.enumeration.ResultDiffEnum;
+import io.github.mariazevedo88.diffapi.model.enumeration.ResultDiffEnum;
+import io.github.mariazevedo88.diffapi.model.message.Message;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

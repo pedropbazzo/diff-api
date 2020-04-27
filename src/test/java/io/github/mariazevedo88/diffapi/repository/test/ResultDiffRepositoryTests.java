@@ -17,8 +17,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import io.github.mariazevedo88.diffapi.enumeration.ResultDiffEnum;
-import io.github.mariazevedo88.diffapi.model.ResultDiff;
+import io.github.mariazevedo88.diffapi.model.diff.ResultDiff;
+import io.github.mariazevedo88.diffapi.model.enumeration.ResultDiffEnum;
 import io.github.mariazevedo88.diffapi.repository.diff.ResultDiffRepository;
 
 @SpringBootTest

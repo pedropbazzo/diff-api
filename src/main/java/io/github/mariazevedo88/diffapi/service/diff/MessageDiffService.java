@@ -1,11 +1,11 @@
-package io.github.mariazevedo88.diffapi.service;
+package io.github.mariazevedo88.diffapi.service.diff;
 
 import java.util.List;
 import java.util.Optional;
 
-import io.github.mariazevedo88.diffapi.dto.MessageDiffDTO;
-import io.github.mariazevedo88.diffapi.model.Message;
-import io.github.mariazevedo88.diffapi.model.MessageDiff;
+import io.github.mariazevedo88.diffapi.dto.model.diff.MessageDiffDTO;
+import io.github.mariazevedo88.diffapi.model.diff.MessageDiff;
+import io.github.mariazevedo88.diffapi.model.message.Message;
 
 public interface MessageDiffService {
 	
