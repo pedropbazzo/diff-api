@@ -5,6 +5,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -18,7 +21,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,6 +40,7 @@ import io.github.mariazevedo88.diffapi.service.message.MessageService;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
+@TestMethodOrder(OrderAnnotation.class)
 public class DiffControllerTests {
 	
 	private static final Long ID_LEFT = 1L;
@@ -45,34 +48,34 @@ public class DiffControllerTests {
 	private static final String LEFT_DATA = "SGVsbG8gV29ybGQ=";
 	private static final String RIGHT_DATA = "SGVsbG8gV29ybGQ=";
 
-	@MockBean
-	private MessageService service;
-	
 	@Autowired
 	private MockMvc mockMvc;
+
+	@MockBean
+	private MessageService messageService;
 	
 	@Test
+	@Order(1)
 	public void testSaveLeftEndpoint() throws Exception {
 		
-		BDDMockito.given(service.save(Mockito.any(Message.class))).willReturn(getMockLeftMessage());
-		
+		BDDMockito.given(messageService.save(Mockito.any(Message.class))).willReturn(getMockLeftMessage());
+
 		mockMvc.perform(post("/v1/diff/1/left")
 				.content(getLeftJsonPayload(LEFT_DATA))
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isCreated())
-		.andDo(MockMvcResultHandlers.print());
+		.andExpect(status().isCreated());
 	}
 	
 	@Test
+	@Order(2)
 	public void testSaveRightEndpoint() throws Exception {
 		
-		BDDMockito.given(service.save(Mockito.any(Message.class))).willReturn(getMockRightMessage());
-		
+		BDDMockito.given(messageService.save(Mockito.any(Message.class))).willReturn(getMockRightMessage());
+
 		mockMvc.perform(post("/v1/diff/2/right")
 				.content(getRightJsonPayload(RIGHT_DATA))
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isCreated())
-		.andDo(MockMvcResultHandlers.print());
+		.andExpect(status().isCreated());
 	}
 	
 	public Message getMockLeftMessage() {
@@ -80,7 +83,6 @@ public class DiffControllerTests {
 		Message message = new Message();
 		message.setId(ID_LEFT);
 		message.setLeftData(LEFT_DATA);
-		message.setRightData(null);
 		
 		return message;
 	}
@@ -90,7 +92,6 @@ public class DiffControllerTests {
 		Message message = new Message();
 		message.setId(ID_RIGHT);
 		message.setRightData(RIGHT_DATA);
-		message.setLeftData(null);
 		
 		return message;
 	}

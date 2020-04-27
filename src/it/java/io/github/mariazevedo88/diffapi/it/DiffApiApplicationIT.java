@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,6 +37,7 @@ import io.github.mariazevedo88.diffapi.model.enumeration.ResultDiffEnum;
 @DisplayName("DiffApiApplicationIT")
 @TestMethodOrder(OrderAnnotation.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Transactional
 public class DiffApiApplicationIT {
 
 	@LocalServerPort

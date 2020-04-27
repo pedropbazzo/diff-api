@@ -166,7 +166,8 @@ public class DiffController {
 			return new ResponseEntity<>(response, headers, HttpStatus.OK);
 		}
 		
-		Message message = messageService.save(messageService.convertDTOToEntity(dto));
+		Message entity = messageService.convertDTOToEntity(dto);
+		Message message = messageService.save(entity);
 		MessageDTO messageDTO = messageService.convertEntityToDTO(message);
 		createMessageSelfLink(message, messageDTO);
 		
@@ -253,7 +254,8 @@ public class DiffController {
 			return new ResponseEntity<>(response, headers, HttpStatus.OK);
 		}
 		
-		Message message = messageService.save(messageService.convertDTOToEntity(dto));
+		Message entity = messageService.convertDTOToEntity(dto);
+		Message message = messageService.save(entity);
 		MessageDTO messageDTO = messageService.convertEntityToDTO(message);
 		createMessageSelfLink(message, messageDTO);
 		

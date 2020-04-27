@@ -11,7 +11,7 @@
 	
 	<groupId>io.github.mariazevedo88</groupId>
 	<artifactId>diff-api</artifactId>
-	<version>1.1.0</version>
+	<version>2.0.0</version>
 	
 	<name>diff-api</name>
 	<description>Diff API that accepts and compare JSON base64</description>

@@ -12,10 +12,8 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 /**
  * Class that implements a message structure with an value
@@ -23,10 +21,8 @@ import lombok.ToString;
  * @author Mariana Azevedo
  * @since 23/07/2019
  */
-@Getter
-@Setter
+@Data
 @Entity
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "message")
