@@ -18,31 +18,38 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import io.github.mariazevedo88.diffapi.model.message.Message;
-import io.github.mariazevedo88.diffapi.repository.message.MessageRepository;
-import io.github.mariazevedo88.diffapi.service.message.MessageService;
+import io.github.mariazevedo88.diffapi.model.diff.MessageDiff;
+import io.github.mariazevedo88.diffapi.repository.diff.MessageDiffRepository;
+import io.github.mariazevedo88.diffapi.service.diff.MessageDiffService;
 
+/**
+ * Class that implements tests for MessageDiffService
+ *  
+ * @author Mariana Azevedo
+ * @since 08/03/2020
+ */
 @SpringBootTest
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, MockitoTestExecutionListener.class })
 @ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
-public class MessageServiceTests {
+public class MessageDiffServiceTest {
 	
 	@MockBean
-	MessageRepository repository;
+	MessageDiffRepository repository;
 	
 	@Autowired
-	MessageService service;
+	MessageDiffService service;
 	
 	@BeforeAll
 	public void setUp() {
 		BDDMockito.given(repository.findById(Mockito.anyLong()))
-			.willReturn(Optional.of(new Message()));
+			.willReturn(Optional.of(new MessageDiff()));
 	}
 	
 	@Test
 	public void testFindById() {
-		Optional<Message> message = service.findById(1L);
+		Optional<MessageDiff> message = service.findById(1L);
 		assertTrue(message.isPresent());
 	}
+
 }

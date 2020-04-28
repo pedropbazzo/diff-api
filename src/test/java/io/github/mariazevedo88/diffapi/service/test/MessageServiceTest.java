@@ -18,32 +18,31 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import io.github.mariazevedo88.diffapi.model.diff.ResultDiff;
-import io.github.mariazevedo88.diffapi.repository.diff.ResultDiffRepository;
-import io.github.mariazevedo88.diffapi.service.diff.ResultDiffService;
+import io.github.mariazevedo88.diffapi.model.message.Message;
+import io.github.mariazevedo88.diffapi.repository.message.MessageRepository;
+import io.github.mariazevedo88.diffapi.service.message.MessageService;
 
 @SpringBootTest
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, MockitoTestExecutionListener.class })
 @ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
-public class ResultDiffServiceTests {
+public class MessageServiceTest {
 	
 	@MockBean
-	ResultDiffRepository repository;
+	MessageRepository repository;
 	
 	@Autowired
-	ResultDiffService service;
+	MessageService service;
 	
 	@BeforeAll
 	public void setUp() {
 		BDDMockito.given(repository.findById(Mockito.anyLong()))
-			.willReturn(Optional.of(new ResultDiff()));
+			.willReturn(Optional.of(new Message()));
 	}
 	
 	@Test
 	public void testFindById() {
-		Optional<ResultDiff> result = service.findById(1L);
-		assertTrue(result.isPresent());
+		Optional<Message> message = service.findById(1L);
+		assertTrue(message.isPresent());
 	}
-
 }

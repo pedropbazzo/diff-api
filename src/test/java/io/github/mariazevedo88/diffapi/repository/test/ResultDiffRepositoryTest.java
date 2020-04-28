@@ -17,26 +17,28 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import io.github.mariazevedo88.diffapi.model.diff.MessageDiff;
-import io.github.mariazevedo88.diffapi.repository.diff.MessageDiffRepository;
+import io.github.mariazevedo88.diffapi.model.diff.ResultDiff;
+import io.github.mariazevedo88.diffapi.model.enumeration.ResultDiffEnum;
+import io.github.mariazevedo88.diffapi.repository.diff.ResultDiffRepository;
 
 @SpringBootTest
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
 @ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
-public class MessageDiffRepositoryTests {
+public class ResultDiffRepositoryTest {
 	
 	@Autowired
-	MessageDiffRepository repository;
+	ResultDiffRepository repository;
 	
 	@BeforeAll
 	private void setUp() {
 		
-		MessageDiff message = new MessageDiff();
-		message.setLength(0);
-		message.setLength(9);
+		ResultDiff result = new ResultDiff();
+		result.setMessage(null);
+		result.setResult(ResultDiffEnum.EQUAL);
+		result.setDiff(null);
 		
-		repository.save(message);
+		repository.save(result);
 	}
 	
 	@AfterAll
@@ -47,18 +49,19 @@ public class MessageDiffRepositoryTests {
 	@Test
 	public void testSave() {
 		
-		MessageDiff message = new MessageDiff();
-		message.setLength(1);
-		message.setOffset(16);
+		ResultDiff result = new ResultDiff();
+		result.setMessage(null);
+		result.setResult(ResultDiffEnum.DIFFERENT);
+		result.setDiff(null);
 		
-		MessageDiff response = repository.save(message);
+		repository.save(result);
 		
-		assertNotNull(response);
+		assertNotNull(result);
 	}
 	
 	@Test
 	public void testFindById(){
-		Optional<MessageDiff> response = repository.findById(2L);
+		Optional<ResultDiff> response = repository.findById(2L);
 		
 		assertTrue(response.isPresent());
 		assertEquals(2L, response.get().getId());

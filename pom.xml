@@ -12,6 +12,7 @@
 	<groupId>io.github.mariazevedo88</groupId>
 	<artifactId>diff-api</artifactId>
 	<version>2.0.0</version>
+	<packaging>jar</packaging>
 	
 	<name>diff-api</name>
 	<description>Diff API that accepts and compare JSON base64</description>
@@ -26,7 +27,6 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<surefire.plugin.version>2.22.0</surefire.plugin.version>
 		<jacoco.version>0.8.4</jacoco.version>
 		<coveralls.version>4.3.0</coveralls.version>
 		<swagger.version>2.9.2</swagger.version>
@@ -60,6 +60,14 @@
 		    <artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-hateoas</artifactId>
+		</dependency>
+		<dependency>
 		    <groupId>com.h2database</groupId>
 		    <artifactId>h2</artifactId>
 		    <scope>runtime</scope>
@@ -68,10 +76,6 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
 		    <groupId>org.postgresql</groupId>
@@ -93,10 +97,6 @@
 		    <version>${swagger.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.springframework.boot</groupId>
-		    <artifactId>spring-boot-starter-hateoas</artifactId>
-		</dependency>
-		<dependency>
 		  <groupId>org.modelmapper</groupId>
 		  <artifactId>modelmapper</artifactId>
 		  <version>${modelmapper.version}</version>
@@ -104,92 +104,60 @@
 	</dependencies>
 
 	<build>
-	    <resources>
-	        <resource>
-	            <directory>src/main/resources</directory>
-	            <filtering>true</filtering>
-	        </resource>
-	    </resources>
-	    
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>                                                             
+	            <groupId>org.codehaus.mojo</groupId>                             
+	            <artifactId>build-helper-maven-plugin</artifactId>               
+	            <executions>                                                     
+	                <execution>                                                  
+	                    <id>add-source</id>                                      
+	                    <phase>generate-sources</phase>                          
+	                    <goals>                                                  
+	                        <goal>add-test-source</goal>                         
+	                    </goals>                                                 
+	                    <configuration>                                          
+	                        <sources>                                            
+	                            <source>src/it/java</source>                     
+	                        </sources>
+	                        <includes>
+		                		<include>**/*IT.java</include>
+		                	</includes>                                           
+	                    </configuration>                                         
+	                </execution>                                                 
+	            </executions>                                                    
+	        </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
-                    <trimStackTrace>false</trimStackTrace>
+                	<includes>
+                		<include>**/*IT.java</include>
+                	</includes>
                 </configuration>
                 <executions>
                     <execution>
+                    	<id>failsafe-integration-tests</id>
+        				<phase>integration-test</phase>
                         <goals>
                             <goal>integration-test</goal>
+                            <goal>verify</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
-            
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-integration-test-sources</id>
-                        <phase>generate-test-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/it/java</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>add-integration-test-resources</id>
-                        <phase>generate-test-resources</phase>
-                        <goals>
-                            <goal>add-test-resource</goal>
-                        </goals>
-                        <configuration>
-                            <resources>
-                                <resource>
-                                    <directory>src/it/resources</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            
-			<plugin>
-                 <groupId>org.springframework.boot</groupId>
-                 <artifactId>spring-boot-maven-plugin</artifactId>
-                 <configuration>
-				    <fork>true</fork>
-				    <mainClass>io.github.mariazevedo88.diffapi.DiffApiApplication</mainClass>
-				  </configuration>
-                 <executions>
-                     <execution>
-                         <goals>
-                             <goal>repackage</goal>
-                         </goals>
-                     </execution>
-                 </executions>
-             </plugin>
-             
-             <plugin>
 			    <groupId>org.eluder.coveralls</groupId>
 			    <artifactId>coveralls-maven-plugin</artifactId>
 			    <version>${coveralls.version}</version>
 			    <configuration>
 			        <repoToken>${env.REPO_TOKEN}</repoToken>
 			    </configuration>
-			 </plugin>
-			 
-             <plugin>
+			</plugin>
+            <plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>${jacoco.version}</version>
@@ -222,7 +190,7 @@
                                         <limit implementation="org.jacoco.report.check.Limit">
 							                <counter>LINE</counter>
 							                <value>COVEREDRATIO</value>
-							               	<minimum>70%</minimum>
+							               	<minimum>60%</minimum>
 							            </limit>
                                     </limits>
                                 </rule>

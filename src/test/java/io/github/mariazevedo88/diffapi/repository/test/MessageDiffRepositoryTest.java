@@ -17,23 +17,24 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import io.github.mariazevedo88.diffapi.model.message.Message;
-import io.github.mariazevedo88.diffapi.repository.message.MessageRepository;
+import io.github.mariazevedo88.diffapi.model.diff.MessageDiff;
+import io.github.mariazevedo88.diffapi.repository.diff.MessageDiffRepository;
 
 @SpringBootTest
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
 @ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
-public class MessageRepositoryTests {
+public class MessageDiffRepositoryTest {
 	
 	@Autowired
-	MessageRepository repository;
+	MessageDiffRepository repository;
 	
 	@BeforeAll
 	private void setUp() {
 		
-		Message message = new Message();
-		message.setLeftData("Test");
+		MessageDiff message = new MessageDiff();
+		message.setLength(0);
+		message.setLength(9);
 		
 		repository.save(message);
 	}
@@ -46,20 +47,21 @@ public class MessageRepositoryTests {
 	@Test
 	public void testSave() {
 		
-		Message message = new Message();
-		message.setRightData("Test");
+		MessageDiff message = new MessageDiff();
+		message.setLength(1);
+		message.setOffset(16);
 		
-		Message response = repository.save(message);
+		MessageDiff response = repository.save(message);
+		
 		assertNotNull(response);
 	}
 	
 	@Test
 	public void testFindById(){
-		
-		Optional<Message> response = repository.findById(1L);
+		Optional<MessageDiff> response = repository.findById(2L);
 		
 		assertTrue(response.isPresent());
-		assertEquals(1L, response.get().getId());
+		assertEquals(2L, response.get().getId());
 	}
 
 }
