@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.2.6.RELEASE</version>
+		<version>2.2.9.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	
 	<groupId>io.github.mariazevedo88</groupId>
 	<artifactId>diff-api</artifactId>
-	<version>2.0.0</version>
+	<version>2.0.1</version>
 	<packaging>jar</packaging>
 	
 	<name>diff-api</name>
@@ -29,8 +29,8 @@
 		<java.version>1.8</java.version>
 		<jacoco.version>0.8.4</jacoco.version>
 		<coveralls.version>4.3.0</coveralls.version>
-		<swagger.version>2.9.2</swagger.version>
-		<modelmapper.version>2.3.7</modelmapper.version>
+		<swagger.version>3.0.0</swagger.version>
+		<modelmapper.version>2.3.8</modelmapper.version>
 	</properties>
 
 	<dependencies>
@@ -48,12 +48,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.junit.vintage</groupId>
-					<artifactId>junit-vintage-engine</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>
